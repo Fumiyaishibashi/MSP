@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.bg-dots {
+  background-color: #f0f4f8; /* 少し青みがかったグレー */
+  background-image: radial-gradient(circle, #d1d9e3 1px, rgba(0, 0, 0, 0) 1px);
+  background-size: 20px 20px;
+}
+
