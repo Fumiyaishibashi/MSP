@@ -20,7 +20,7 @@ export interface EventProject {
 }
 
 // 3. キャンバス上のアイテム（共用体）
-export type PlacedItem = PlacedIpItem | PlacedIdeaItem;
+export type PlacedItem = PlacedIpItem | PlacedIdeaItem | PlacedPersonMemoItem | PlacedCompanyMemoItem;
 
 // 3a. IP付箋
 export interface PlacedIpItem {
@@ -43,4 +43,63 @@ export interface PlacedIdeaItem {
   position: { x: number; y: number };
   size: { width: number | string; height: number | string };
   zIndex: number;
+}
+
+// 3c. 人メモ付箋
+export interface PlacedPersonMemoItem {
+  type: 'person';
+  uniqueId: string;
+  memoId: string; // PersonMemo.id への参照
+  author: string; // 配置した人の名前
+  position: { x: number; y: number };
+  size: { width: number | string; height: number | string };
+  zIndex: number;
+}
+
+// 3d. 会社メモ付箋
+export interface PlacedCompanyMemoItem {
+  type: 'company';
+  uniqueId: string;
+  memoId: string; // CompanyMemo.id への参照
+  author: string; // 配置した人の名前
+  position: { x: number; y: number };
+  size: { width: number | string; height: number | string };
+  zIndex: number;
+}
+
+// 4. 人メモ（マスターデータ）
+export interface PersonMemo {
+  id: string;
+  name: string;
+  department: string;
+  expertise: string[];
+  email: string;
+  phone?: string;
+  pastProjects: string[];
+  avatar?: string;
+}
+
+// 5. 会社メモ（マスターデータ）
+export interface CompanyMemo {
+  id: string;
+  name: string;
+  specialty: string[];
+  pastProjects: string[];
+  pointOfContact: {
+    personId?: string;
+    name: string;
+    email: string;
+    role?: string;
+  }[];
+}
+
+// 6. チャットメッセージ（グローバル）
+export interface Message {
+  id: string;
+  memoType: 'person' | 'company';
+  memoId: string;
+  author: string;
+  content: string;
+  timestamp: Date;
+  reactions?: string[];
 }

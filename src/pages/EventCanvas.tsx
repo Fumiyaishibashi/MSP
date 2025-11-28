@@ -4,10 +4,15 @@ import { AppContext } from '../context/AppContext';
 import Sidebar from '../components/layout/Sidebar';
 import DraggableIpSticky from '../components/canvas/DraggableIpSticky';
 import DraggableIdeaSticky from '../components/canvas/DraggableIdeaSticky';
+import DraggablePersonSticky from '../components/canvas/DraggablePersonSticky';
+import DraggableCompanySticky from '../components/canvas/DraggableCompanySticky';
 import Modal from '../components/ui/Modal';
+import PersonMemoModal from '../components/modals/PersonMemoModal';
+import CompanyMemoModal from '../components/modals/CompanyMemoModal';
+import ChatModal from '../components/modals/ChatModal';
 import { v4 as uuidv4 } from 'uuid';
 import { ArrowLeft, Lightbulb, FilePlus } from 'lucide-react';
-import type { PlacedIpItem, PlacedIdeaItem, IpAssetMaster } from '../types';
+import type { PlacedIpItem, PlacedIdeaItem, PlacedPersonMemoItem, PlacedCompanyMemoItem, IpAssetMaster, PersonMemo, CompanyMemo } from '../types';
 import { Rnd } from 'react-rnd';
 
 const dummyAuthors = ['石橋', '田中', '佐藤', '鈴木', '高橋'];
@@ -19,12 +24,15 @@ const EventCanvas = () => {
 
   const [isIpModalOpen, setIsIpModalOpen] = useState(false);
   const [newIpName, setNewIpName] = useState('');
+  const [selectedPersonMemo, setSelectedPersonMemo] = useState<PersonMemo | null>(null);
+  const [selectedCompanyMemo, setSelectedCompanyMemo] = useState<CompanyMemo | null>(null);
+  const [chatMemo, setChatMemo] = useState<{ type: 'person' | 'company'; memo: PersonMemo | CompanyMemo } | null>(null);
 
   if (!context) {
     return <div>Context is not available.</div>;
   }
 
-  const { projects, setProjects, ipAssets, setIpAssets } = context;
+  const { projects, setProjects, ipAssets, setIpAssets, personMemos, companyMemos } = context;
   const currentProject = projects.find((p) => p.id === projectId);
 
   const getRandomAuthor = () => dummyAuthors[Math.floor(Math.random() * dummyAuthors.length)];
@@ -36,14 +44,63 @@ const EventCanvas = () => {
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    const assetId = e.dataTransfer.getData('application/reactflow');
-    if (!assetId || !dropAreaRef.current || !currentProject) return;
+    const rawData = e.dataTransfer.getData('application/reactflow');
+    if (!rawData || !dropAreaRef.current || !currentProject) return;
 
     const dropAreaBounds = dropAreaRef.current.getBoundingClientRect();
     const position = { x: e.clientX - dropAreaBounds.left, y: e.clientY - dropAreaBounds.top };
     const maxZIndex = currentProject.placedItems.reduce((max, item) => Math.max(max, item.zIndex), 0);
+    const author = getRandomAuthor();
 
-    const newItem: PlacedIpItem = { type: 'ip', uniqueId: uuidv4(), assetId, author: getRandomAuthor(), position, size: { width: 160, height: 192 }, zIndex: maxZIndex + 1, note: '' };
+    try {
+      // Try to parse as JSON for person/company memos
+      const dragData = JSON.parse(rawData);
+
+      if (dragData.type === 'person' && dragData.memoId) {
+        const newItem: PlacedPersonMemoItem = {
+          type: 'person',
+          uniqueId: uuidv4(),
+          memoId: dragData.memoId,
+          author,
+          position,
+          size: { width: 160, height: 200 },
+          zIndex: maxZIndex + 1,
+        };
+        const updatedProjects = projects.map((p) => (p.id === projectId ? { ...p, placedItems: [...p.placedItems, newItem] } : p));
+        setProjects(updatedProjects);
+        return;
+      }
+
+      if (dragData.type === 'company' && dragData.memoId) {
+        const newItem: PlacedCompanyMemoItem = {
+          type: 'company',
+          uniqueId: uuidv4(),
+          memoId: dragData.memoId,
+          author,
+          position,
+          size: { width: 160, height: 200 },
+          zIndex: maxZIndex + 1,
+        };
+        const updatedProjects = projects.map((p) => (p.id === projectId ? { ...p, placedItems: [...p.placedItems, newItem] } : p));
+        setProjects(updatedProjects);
+        return;
+      }
+    } catch {
+      // Not JSON, so it's an IP asset ID (string)
+    }
+
+    // IP asset (string)
+    const assetId = rawData;
+    const newItem: PlacedIpItem = {
+      type: 'ip',
+      uniqueId: uuidv4(),
+      assetId,
+      author,
+      position,
+      size: { width: 160, height: 192 },
+      zIndex: maxZIndex + 1,
+      note: '',
+    };
     const updatedProjects = projects.map((p) => (p.id === projectId ? { ...p, placedItems: [...p.placedItems, newItem] } : p));
     setProjects(updatedProjects);
   };
@@ -122,6 +179,17 @@ const EventCanvas = () => {
     setProjects(updatedProjects);
   };
 
+  const handleDeleteItem = (uniqueId: string) => {
+    const updatedProjects = projects.map((p) => {
+      if (p.id === projectId) {
+        const updatedItems = p.placedItems.filter((item) => item.uniqueId !== uniqueId);
+        return { ...p, placedItems: updatedItems };
+      }
+      return p;
+    });
+    setProjects(updatedProjects);
+  };
+
   if (!currentProject) {
     return (
       <div className="flex flex-col items-center justify-center h-screen">
@@ -167,10 +235,20 @@ const EventCanvas = () => {
             if (item.type === 'ip') {
               const asset = ipAssets.find((m) => m.id === item.assetId);
               if (!asset) return null;
-              return <DraggableIpSticky key={item.uniqueId} item={item} asset={asset} onStop={handleDragStop} onNoteChange={handleIpNoteChange} onResizeStop={handleResizeStop} />;
+              return <DraggableIpSticky key={item.uniqueId} item={item} asset={asset} onStop={handleDragStop} onNoteChange={handleIpNoteChange} onResizeStop={handleResizeStop} onDelete={handleDeleteItem} />;
             }
             if (item.type === 'idea') {
-              return <DraggableIdeaSticky key={item.uniqueId} item={item} onStop={handleDragStop} onTextChange={handleIdeaTextChange} onResizeStop={handleResizeStop} />;
+              return <DraggableIdeaSticky key={item.uniqueId} item={item} onStop={handleDragStop} onTextChange={handleIdeaTextChange} onResizeStop={handleResizeStop} onDelete={handleDeleteItem} />;
+            }
+            if (item.type === 'person') {
+              const memo = personMemos.find((m) => m.id === item.memoId);
+              if (!memo) return null;
+              return <DraggablePersonSticky key={item.uniqueId} item={item} memo={memo} onStop={handleDragStop} onResizeStop={handleResizeStop} onDelete={handleDeleteItem} onOpen={setSelectedPersonMemo} />;
+            }
+            if (item.type === 'company') {
+              const memo = companyMemos.find((m) => m.id === item.memoId);
+              if (!memo) return null;
+              return <DraggableCompanySticky key={item.uniqueId} item={item} memo={memo} onStop={handleDragStop} onResizeStop={handleResizeStop} onDelete={handleDeleteItem} onOpen={setSelectedCompanyMemo} />;
             }
             return null;
           })}
@@ -197,6 +275,27 @@ const EventCanvas = () => {
           </div>
         </div>
       </Modal>
+
+      <PersonMemoModal
+        memo={selectedPersonMemo}
+        isOpen={selectedPersonMemo !== null}
+        onClose={() => setSelectedPersonMemo(null)}
+        onOpenChat={(memo) => setChatMemo({ type: 'person', memo })}
+      />
+
+      <CompanyMemoModal
+        memo={selectedCompanyMemo}
+        isOpen={selectedCompanyMemo !== null}
+        onClose={() => setSelectedCompanyMemo(null)}
+        onOpenChat={(memo) => setChatMemo({ type: 'company', memo })}
+      />
+
+      <ChatModal
+        memoType={chatMemo?.type || null}
+        memo={chatMemo?.memo || null}
+        isOpen={chatMemo !== null}
+        onClose={() => setChatMemo(null)}
+      />
     </div>
   );
 };

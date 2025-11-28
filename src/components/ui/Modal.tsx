@@ -6,12 +6,19 @@ interface ModalProps {
   onClose: () => void;
   children: ReactNode;
   title?: string;
+  size?: 'small' | 'medium' | 'large';
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title }) => {
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title, size = 'medium' }) => {
   if (!isOpen) {
     return null;
   }
+
+  const sizeClasses = {
+    small: 'max-w-sm',
+    medium: 'max-w-md',
+    large: 'max-w-2xl',
+  };
 
   return (
     <div
@@ -21,7 +28,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title }) => {
     >
       <div
         // モーダル本体
-        className="bg-white rounded-lg shadow-2xl w-full max-w-md m-4 z-50 transform transition-all"
+        className={`bg-white rounded-lg shadow-2xl w-full ${sizeClasses[size]} m-4 z-50 transform transition-all`}
         onClick={(e) => e.stopPropagation()} // モーダル内のクリックで閉じないようにする
       >
         <header className="flex justify-between items-center p-4 border-b">
