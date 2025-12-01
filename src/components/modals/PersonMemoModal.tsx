@@ -1,16 +1,17 @@
 import React from 'react';
 import Modal from '../ui/Modal';
 import type { PersonMemo } from '../../types';
-import { Mail, Phone, Copy, MessageCircle } from 'lucide-react';
+import { Mail, Phone, Copy, MessageCircle, Trash2 } from 'lucide-react';
 
 interface PersonMemoModalProps {
   memo: PersonMemo | null;
   isOpen: boolean;
   onClose: () => void;
   onOpenChat: (memo: PersonMemo) => void;
+  onDelete?: (memoId: string) => void;
 }
 
-const PersonMemoModal: React.FC<PersonMemoModalProps> = ({ memo, isOpen, onClose, onOpenChat }) => {
+const PersonMemoModal: React.FC<PersonMemoModalProps> = ({ memo, isOpen, onClose, onOpenChat, onDelete }) => {
   if (!memo) return null;
 
   const handleCopyEmail = () => {
@@ -111,17 +112,29 @@ const PersonMemoModal: React.FC<PersonMemoModalProps> = ({ memo, isOpen, onClose
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-3 pt-4 border-t border-gray-200">
+        <div className="space-y-3 pt-4 border-t border-gray-200">
           <button
             onClick={handleOpenChat}
-            className="flex-1 flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+            className="w-full flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
           >
             <MessageCircle size={18} />
             チャットを開く
           </button>
+          {onDelete && (
+            <button
+              onClick={() => {
+                onDelete(memo.id);
+                onClose();
+              }}
+              className="w-full flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+            >
+              <Trash2 size={18} />
+              このメモを削除
+            </button>
+          )}
           <button
             onClick={onClose}
-            className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg transition-colors"
+            className="w-full bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg transition-colors"
           >
             閉じる
           </button>

@@ -10,7 +10,7 @@ const EventStickyCard: React.FC<EventStickyCardProps> = ({ project }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/event/${project.id}`);
+    navigate(`/projects/${project.id}`);
   };
 
   const statusColors: Record<EventProject['status'], string> = {

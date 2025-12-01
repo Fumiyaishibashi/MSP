@@ -3,6 +3,7 @@ import { Rnd } from 'react-rnd';
 import type { PlacedCompanyMemoItem, CompanyMemo } from '../../types';
 import Avatar from '../ui/Avatar';
 import { X } from 'lucide-react';
+import { useLongPress } from '../../hooks/useLongPress';
 
 interface DraggableCompanyStickyProps {
   item: PlacedCompanyMemoItem;
@@ -21,6 +22,21 @@ const DraggableCompanySticky: React.FC<DraggableCompanyStickyProps> = ({
   onDelete,
   onOpen,
 }) => {
+  const [isDraggable, setIsDraggable] = useState(false);
+
+  // 長押し検出
+  const { handlers: longPressHandlers } = useLongPress({
+    threshold: 500,
+    onLongPress: () => setIsDraggable(true),
+  });
+
+  const handleDragStart = () => {
+    // ドラッグ開始時に isDraggable を強制チェック
+    if (!isDraggable) {
+      return false; // ドラッグを阻止
+    }
+  };
+
   const handleDragStop = (_e: any, d: { x: number; y: number }) => {
     onStop(item.uniqueId, { x: d.x, y: d.y });
   };
@@ -33,18 +49,20 @@ const DraggableCompanySticky: React.FC<DraggableCompanyStickyProps> = ({
     <Rnd
       size={item.size}
       position={item.position}
+      onDragStart={handleDragStart}
       onDragStop={handleDragStop}
       onResizeStop={handleResizeStop}
       minWidth={160}
       minHeight={200}
       bounds="parent"
+      {...(isDraggable && { disableDrag: !isDraggable })}
       className="shadow-lg rounded-md bg-emerald-200 transform -rotate-1 hover:rotate-0 transition-all duration-150"
       style={{ zIndex: item.zIndex }}
     >
-      <div
-        className="relative w-full h-full p-3 flex flex-col cursor-pointer hover:shadow-inner"
-        onClick={() => onOpen(memo)}
-      >
+      <div className="relative w-full h-full p-3 flex flex-col" {...longPressHandlers} onMouseUp={() => {
+        longPressHandlers.onMouseUp();
+        setIsDraggable(false);
+      }}>
         <div className="absolute -top-2 -left-2">
           <Avatar name={item.author} />
         </div>
@@ -58,8 +76,10 @@ const DraggableCompanySticky: React.FC<DraggableCompanyStickyProps> = ({
         >
           <X size={16} />
         </button>
-
-        <div className="flex-grow flex flex-col items-center justify-start pt-2">
+        <div
+          className="flex-grow flex flex-col items-center justify-start pt-2 cursor-pointer"
+          onClick={() => onOpen(memo)}
+        >
           <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-emerald-300 rounded mb-2">
             <span className="text-xl font-bold text-white">🏢</span>
           </div>

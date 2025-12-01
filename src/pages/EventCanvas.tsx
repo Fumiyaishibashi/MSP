@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useRef, useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
 import Sidebar from '../components/layout/Sidebar';
@@ -11,9 +11,8 @@ import PersonMemoModal from '../components/modals/PersonMemoModal';
 import CompanyMemoModal from '../components/modals/CompanyMemoModal';
 import ChatModal from '../components/modals/ChatModal';
 import { v4 as uuidv4 } from 'uuid';
-import { ArrowLeft, Lightbulb, FilePlus } from 'lucide-react';
+import { ArrowLeft, Lightbulb, FilePlus, MessageSquare, ZoomIn, ZoomOut, Maximize } from 'lucide-react';
 import type { PlacedIpItem, PlacedIdeaItem, PlacedPersonMemoItem, PlacedCompanyMemoItem, IpAssetMaster, PersonMemo, CompanyMemo } from '../types';
-import { Rnd } from 'react-rnd';
 
 const dummyAuthors = ['石橋', '田中', '佐藤', '鈴木', '高橋'];
 
@@ -21,12 +20,18 @@ const EventCanvas = () => {
   const { id: projectId } = useParams();
   const context = useContext(AppContext);
   const dropAreaRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
 
   const [isIpModalOpen, setIsIpModalOpen] = useState(false);
   const [newIpName, setNewIpName] = useState('');
   const [selectedPersonMemo, setSelectedPersonMemo] = useState<PersonMemo | null>(null);
   const [selectedCompanyMemo, setSelectedCompanyMemo] = useState<CompanyMemo | null>(null);
   const [chatMemo, setChatMemo] = useState<{ type: 'person' | 'company'; memo: PersonMemo | CompanyMemo } | null>(null);
+
+  // ズーム機能用state
+  const [zoom, setZoom] = useState(1);
+  const [targetZoom, setTargetZoom] = useState(1);
+  const [lastTouchDistance, setLastTouchDistance] = useState(0);
 
   if (!context) {
     return <div>Context is not available.</div>;
@@ -35,7 +40,78 @@ const EventCanvas = () => {
   const { projects, setProjects, ipAssets, setIpAssets, personMemos, companyMemos } = context;
   const currentProject = projects.find((p) => p.id === projectId);
 
+  // スムーズズームアニメーション
+  useEffect(() => {
+    if (zoom === targetZoom) return;
+
+    const animationFrame = requestAnimationFrame(() => {
+      setZoom((prev) => {
+        const diff = targetZoom - prev;
+        const nextZoom = prev + diff * 0.1; // スムーズな補間
+        return Math.abs(diff) < 0.001 ? targetZoom : nextZoom;
+      });
+    });
+
+    return () => cancelAnimationFrame(animationFrame);
+  }, [zoom, targetZoom]);
+
   const getRandomAuthor = () => dummyAuthors[Math.floor(Math.random() * dummyAuthors.length)];
+
+  // ズーム操作
+  const handleZoom = (delta: number) => {
+    const newZoom = Math.max(0.1, Math.min(3, targetZoom + delta));
+    setTargetZoom(newZoom);
+  };
+
+  // ズームリセット
+  const handleZoomReset = () => {
+    setTargetZoom(1);
+  };
+
+  // マウスホイール処理（Shift + ホイール = ズーム）
+  // macOSのマジックパッド対応
+  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    if (e.shiftKey) {
+      e.preventDefault();
+      const delta = e.deltaY < 0 ? 0.1 : -0.1;
+      handleZoom(delta);
+    }
+  };
+
+  // タッチパッド処理（2本指）
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length === 2) {
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      const distance = Math.hypot(
+        touch1.clientX - touch2.clientX,
+        touch1.clientY - touch2.clientY
+      );
+      setLastTouchDistance(distance);
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      const distance = Math.hypot(
+        touch1.clientX - touch2.clientX,
+        touch1.clientY - touch2.clientY
+      );
+
+      if (lastTouchDistance > 0) {
+        const delta = (distance - lastTouchDistance) * 0.01; // 係数を大きくしてズーム感度を上げた
+        handleZoom(delta);
+      }
+      setLastTouchDistance(distance);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setLastTouchDistance(0);
+  };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -214,6 +290,40 @@ const EventCanvas = () => {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+              <button
+                onClick={() => handleZoom(-0.2)}
+                className="p-2 hover:bg-gray-200 rounded transition-colors"
+                title="ズームアウト"
+              >
+                <ZoomOut size={18} />
+              </button>
+              <span className="px-2 text-sm font-semibold text-gray-700 min-w-[50px] text-center">
+                {Math.round(zoom * 100)}%
+              </span>
+              <button
+                onClick={() => handleZoom(0.2)}
+                className="p-2 hover:bg-gray-200 rounded transition-colors"
+                title="ズームイン"
+              >
+                <ZoomIn size={18} />
+              </button>
+              <div className="w-px h-6 bg-gray-300 mx-1" />
+              <button
+                onClick={handleZoomReset}
+                className="p-2 hover:bg-gray-200 rounded transition-colors"
+                title="ズームをリセット"
+              >
+                <Maximize size={18} />
+              </button>
+            </div>
+            <Link
+              to={`/projects/${projectId}/chat`}
+              className="flex items-center gap-2 bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-all duration-200"
+            >
+              <MessageSquare size={20} />
+              プロジェクトチャット
+            </Link>
             <button
               onClick={() => setIsIpModalOpen(true)}
               className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-all duration-200"
@@ -230,7 +340,27 @@ const EventCanvas = () => {
             </button>
           </div>
         </header>
-        <main ref={dropAreaRef} onDragOver={handleDragOver} onDrop={handleDrop} className="flex-1 relative overflow-hidden bg-dots">
+        <main
+          ref={canvasRef}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+          onWheel={handleWheel}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          className="flex-1 relative overflow-auto bg-dots"
+          style={{}}
+        >
+          <div
+            ref={dropAreaRef}
+            className="w-full h-full relative"
+            style={{
+              transform: `scale(${zoom})`,
+              transformOrigin: 'top left',
+              width: `${100 / zoom}%`,
+              height: `${100 / zoom}%`,
+            }}
+          >
           {currentProject.placedItems.map((item) => {
             if (item.type === 'ip') {
               const asset = ipAssets.find((m) => m.id === item.assetId);
@@ -252,6 +382,7 @@ const EventCanvas = () => {
             }
             return null;
           })}
+          </div>
         </main>
       </div>
       <Modal isOpen={isIpModalOpen} onClose={() => setIsIpModalOpen(false)} title="新しいIP付箋を作成">
@@ -281,6 +412,14 @@ const EventCanvas = () => {
         isOpen={selectedPersonMemo !== null}
         onClose={() => setSelectedPersonMemo(null)}
         onOpenChat={(memo) => setChatMemo({ type: 'person', memo })}
+        onDelete={(memoId) => {
+          const updatedProject = {
+            ...currentProject,
+            placedItems: currentProject!.placedItems.filter((item: any) => item.type !== 'person' || item.memoId !== memoId),
+          };
+          setProjects(projects.map(p => p.id === projectId ? updatedProject : p));
+          setSelectedPersonMemo(null);
+        }}
       />
 
       <CompanyMemoModal
@@ -288,6 +427,14 @@ const EventCanvas = () => {
         isOpen={selectedCompanyMemo !== null}
         onClose={() => setSelectedCompanyMemo(null)}
         onOpenChat={(memo) => setChatMemo({ type: 'company', memo })}
+        onDelete={(memoId) => {
+          const updatedProject = {
+            ...currentProject,
+            placedItems: currentProject!.placedItems.filter((item: any) => item.type !== 'company' || item.memoId !== memoId),
+          };
+          setProjects(projects.map(p => p.id === projectId ? updatedProject : p));
+          setSelectedCompanyMemo(null);
+        }}
       />
 
       <ChatModal

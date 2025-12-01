@@ -93,7 +93,7 @@ export interface CompanyMemo {
   }[];
 }
 
-// 6. チャットメッセージ（グローバル）
+// 6. チャットメッセージ（メモ単位）
 export interface Message {
   id: string;
   memoType: 'person' | 'company';
@@ -102,4 +102,43 @@ export interface Message {
   content: string;
   timestamp: Date;
   reactions?: string[];
+}
+
+// 6b. メモチャット参加者
+export interface MemoChatParticipant {
+  personId: string;
+  name: string;
+  avatar?: string;
+}
+
+// 6c. メモ単位のチャット情報
+export interface MemoChat {
+  memoType: 'person' | 'company';
+  memoId: string;
+  participants: MemoChatParticipant[];
+}
+
+// 7. プロジェクトチャットメッセージ
+export interface ProjectMessage {
+  id: string;
+  projectId: string;
+  author: string;
+  content: string;
+  timestamp: Date;
+  role?: string; // 'person_memo' | 'idea_author' | 'company_introducer' | 'past_participant'
+}
+
+// 8. プロジェクトチャット参加者情報
+export interface ProjectChatParticipant {
+  personId: string;
+  name: string;
+  role: 'person_memo' | 'idea_author' | 'company_introducer' | 'past_participant';
+  reason: string; // 参加理由の説明
+}
+
+// 9. プロジェクトチャット（プロジェクト単位）
+export interface ProjectChat {
+  projectId: string;
+  participants: ProjectChatParticipant[];
+  messages: ProjectMessage[];
 }

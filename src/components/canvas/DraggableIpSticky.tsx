@@ -3,7 +3,8 @@ import { Rnd } from 'react-rnd';
 import type { IpAssetMaster, PlacedIpItem } from '../../types';
 import Modal from '../ui/Modal';
 import Avatar from '../ui/Avatar';
-import { User, Mail, X } from 'lucide-react';
+import { User, Mail, X, Trash2 } from 'lucide-react';
+import { useLongPress } from '../../hooks/useLongPress';
 
 interface DraggableIpStickyProps {
   item: PlacedIpItem;
@@ -18,8 +19,22 @@ const DraggableIpSticky: React.FC<DraggableIpStickyProps> = ({ item, asset, onSt
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editNote, setEditNote] = useState(item.note || '');
-  
+  const [isDraggable, setIsDraggable] = useState(false);
+
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // 長押し検出
+  const { handlers: longPressHandlers } = useLongPress({
+    threshold: 500,
+    onLongPress: () => setIsDraggable(true),
+  });
+
+  const handleDragStart = () => {
+    // ドラッグ開始時に isDraggable を強制チェック
+    if (!isDraggable) {
+      return false; // ドラッグを阻止
+    }
+  };
 
   const handleDragStop = (_e: any, d: { x: number; y: number }) => {
     onStop(item.uniqueId, { x: d.x, y: d.y });
@@ -37,10 +52,6 @@ const DraggableIpSticky: React.FC<DraggableIpStickyProps> = ({ item, asset, onSt
     if (!(e.target as HTMLElement).closest('.memo-area')) {
       openModal();
     }
-  };
-  
-  const handleMemoDoubleClick = () => {
-    setIsEditing(true);
   };
 
   const handleBlur = () => {
@@ -61,16 +72,25 @@ const DraggableIpSticky: React.FC<DraggableIpStickyProps> = ({ item, asset, onSt
       <Rnd
         size={item.size}
         position={item.position}
+        onDragStart={handleDragStart}
         onDragStop={handleDragStop}
         onResizeStop={handleResizeStop}
         minWidth={160}
         minHeight={192}
         bounds="parent"
+        {...(isDraggable && { disableDrag: !isDraggable })}
         className="shadow-lg rounded-md bg-yellow-200 transform -rotate-2 hover:rotate-0 transition-all duration-150"
         style={{ zIndex: item.zIndex }}
         onDoubleClick={handleDoubleClick}
       >
-        <div className="relative w-full h-full p-3 flex flex-col">
+        <div
+          className="relative w-full h-full p-3 flex flex-col"
+          {...longPressHandlers}
+          onMouseUp={() => {
+            longPressHandlers.onMouseUp();
+            setIsDraggable(false);
+          }}
+        >
           <div className="absolute -top-2 -left-2">
             <Avatar name={item.author} />
           </div>
@@ -82,7 +102,13 @@ const DraggableIpSticky: React.FC<DraggableIpStickyProps> = ({ item, asset, onSt
             <X size={16} />
           </button>
           <div className="flex-grow flex flex-col items-center justify-start pt-2">
-            <img src={asset.imagePath} alt={asset.name} className="w-16 h-16 object-contain mb-1" />
+            {asset.imagePath ? (
+              <img src={asset.imagePath} alt={asset.name} className="w-16 h-16 object-contain mb-1" />
+            ) : (
+              <div className="w-16 h-16 flex items-center justify-center bg-gray-300 rounded mb-1">
+                <span className="text-2xl">📺</span>
+              </div>
+            )}
             <p className="text-sm font-semibold text-gray-800 text-center break-words">
               {asset.name}
             </p>
@@ -108,7 +134,68 @@ const DraggableIpSticky: React.FC<DraggableIpStickyProps> = ({ item, asset, onSt
       </Rnd>
 
       <Modal isOpen={isModalOpen} onClose={closeModal} title={`${asset.name} - 詳細情報`}>
-        {/* ... Modal content ... */}
+        <div className="space-y-6">
+          {/* 基本情報 */}
+          <div>
+            <h3 className="text-lg font-bold text-gray-800 mb-3">基本情報</h3>
+            <div className="space-y-2">
+              <p className="text-sm text-gray-700">
+                <span className="font-semibold">カテゴリー:</span> {asset.category}
+              </p>
+              <p className="text-sm text-gray-700">
+                <span className="font-semibold">所有部門:</span> {asset.ownerName}
+              </p>
+            </div>
+          </div>
+
+          {/* プロデューサー情報 */}
+          <div>
+            <h3 className="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
+              <User size={18} /> プロデューサー
+            </h3>
+            <div className="bg-blue-50 rounded-lg p-4 space-y-2">
+              <p className="text-sm font-semibold text-gray-800">鈴木太郎</p>
+              <p className="text-xs text-gray-600 flex items-center gap-2">
+                <Mail size={14} /> suzuki.taro@mbs.co.jp
+              </p>
+              <p className="text-xs text-gray-600">テレビ・ラジオ企画部</p>
+            </div>
+          </div>
+
+          {/* ディレクター情報 */}
+          <div>
+            <h3 className="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
+              <User size={18} /> ディレクター
+            </h3>
+            <div className="bg-green-50 rounded-lg p-4 space-y-2">
+              <p className="text-sm font-semibold text-gray-800">田中花子</p>
+              <p className="text-xs text-gray-600 flex items-center gap-2">
+                <Mail size={14} /> tanaka.hanako@mbs.co.jp
+              </p>
+              <p className="text-xs text-gray-600">制作技術部</p>
+            </div>
+          </div>
+
+          {/* 連絡先 */}
+          <div>
+            <h3 className="text-lg font-bold text-gray-800 mb-3">連絡先</h3>
+            <p className="text-sm text-gray-700">{asset.contact}</p>
+          </div>
+
+          {/* 削除ボタン */}
+          <div className="pt-4 border-t">
+            <button
+              onClick={() => {
+                onDelete(item.uniqueId);
+                closeModal();
+              }}
+              className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors"
+            >
+              <Trash2 size={18} />
+              このメモを削除
+            </button>
+          </div>
+        </div>
       </Modal>
     </>
   );

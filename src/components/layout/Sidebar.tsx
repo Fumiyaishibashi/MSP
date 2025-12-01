@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { AppContext } from '../../context/AppContext';
-import type { IpAssetMaster, PersonMemo, CompanyMemo } from '../../types';
+import type { IpAssetMaster } from '../../types';
 import { Camera, ChevronDown, Shirt, Truck, Users, Building2 } from 'lucide-react';
 
 // アイコン名とコンポーネントのマッピング
