@@ -100,8 +100,13 @@ const ProjectChatPage = () => {
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 flex-col">
-      <header className="bg-white shadow-lg p-4 flex justify-between items-center text-gray-800">
+      <header className="shadow-lg p-4 flex justify-between items-center text-gray-800" style={{ backgroundColor: '#ffff95ff' }}>
         <div className="flex items-center gap-4">
+          <img
+            src="/assets/logo_mbs_synergy.png"
+            alt="MBS Synergy Logo"
+            className="h-10 w-auto"
+          />
           <Link
             to={`/event/${projectId}`}
             className="p-2 rounded-full hover:bg-gray-200 transition-colors"
@@ -157,16 +162,16 @@ const ProjectChatPage = () => {
           </div>
 
           {/* Participants Section - POP Design */}
-          <div className="bg-gradient-to-r from-blue-400 to-purple-500 p-4 text-white shadow-lg">
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-lg font-bold flex items-center gap-2">
+          <div className="bg-gradient-to-r from-blue-400 to-purple-500 p-3 text-white shadow-lg">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-sm font-bold flex items-center gap-2">
                 👥 参加者 ({participants.length})
               </p>
               <button
                 onClick={() => setShowAddParticipant(!showAddParticipant)}
-                className="flex items-center gap-2 px-4 py-2 bg-white text-purple-600 font-bold rounded-full hover:scale-105 transition-transform shadow-md"
+                className="flex items-center gap-1 px-3 py-1.5 bg-white text-purple-600 font-semibold text-xs rounded-full hover:scale-105 transition-transform shadow-md"
               >
-                <Plus size={16} /> 追加
+                <Plus size={14} /> 追加
               </button>
             </div>
 
@@ -212,13 +217,13 @@ const ProjectChatPage = () => {
             )}
 
             {/* Participants List - POP Tags */}
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1">
               {participants.map((participant) => (
                 <div
                   key={participant.personId}
-                  className="flex items-center gap-2 px-4 py-2 bg-white text-purple-600 font-bold rounded-full shadow-md hover:scale-105 transition-transform"
+                  className="flex items-center gap-1 px-3 py-1 bg-white text-purple-600 font-semibold text-xs rounded-full shadow-md hover:scale-105 transition-transform"
                 >
-                  <span>👤 {participant.name}</span>
+                  <span>{participant.name}</span>
                   <button
                     onClick={() =>
                       context.removeProjectChatParticipant(
@@ -228,7 +233,7 @@ const ProjectChatPage = () => {
                     }
                     className="hover:text-red-500 transition-colors"
                   >
-                    <X size={14} />
+                    <X size={12} />
                   </button>
                 </div>
               ))}
@@ -273,9 +278,9 @@ const ProjectChatPage = () => {
                 {/* Send Button */}
                 <button
                   onClick={handleSendMessage}
-                  className="flex-shrink-0 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold px-4 py-1.5 rounded-lg transition-all hover:scale-105 shadow-md transform active:scale-95 flex items-center gap-1"
+                  className="flex-shrink-0 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold px-3 py-1 rounded text-sm transition-all hover:scale-105 shadow-md transform active:scale-95 flex items-center gap-1"
                 >
-                  <Send size={16} />
+                  <Send size={14} />
                   送信
                 </button>
               </div>

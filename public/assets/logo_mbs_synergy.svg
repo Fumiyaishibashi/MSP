@@ -1,0 +1,41 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <defs>
+    <linearGradient id="gradientBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gradientAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ec4899;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Outer circle background -->
+  <circle cx="100" cy="100" r="95" fill="url(#gradientBg)" opacity="0.15"/>
+
+  <!-- Main shape: Overlapping circles representing synergy -->
+  <g>
+    <!-- Left circle -->
+    <circle cx="70" cy="100" r="35" fill="url(#gradientBg)" opacity="0.9"/>
+
+    <!-- Right circle -->
+    <circle cx="130" cy="100" r="35" fill="url(#gradientAccent)" opacity="0.9"/>
+
+    <!-- Top circle -->
+    <circle cx="100" cy="70" r="30" fill="#06b6d4" opacity="0.8"/>
+
+    <!-- Center overlap highlight -->
+    <circle cx="100" cy="100" r="25" fill="white" opacity="0.3"/>
+  </g>
+
+  <!-- Inner details -->
+  <g stroke="white" stroke-width="2" fill="none" stroke-linecap="round">
+    <!-- Connecting lines showing synergy -->
+    <line x1="70" y1="100" x2="130" y2="100" opacity="0.6"/>
+    <line x1="100" y1="70" x2="100" y2="130" opacity="0.6"/>
+  </g>
+
+  <!-- Central dot -->
+  <circle cx="100" cy="100" r="6" fill="white" opacity="0.8"/>
+</svg>

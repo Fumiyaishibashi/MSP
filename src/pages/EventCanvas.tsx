@@ -1,7 +1,6 @@
 import React, { useContext, useRef, useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
-import Sidebar from '../components/layout/Sidebar';
 import DraggableIpSticky from '../components/canvas/DraggableIpSticky';
 import DraggableIdeaSticky from '../components/canvas/DraggableIdeaSticky';
 import DraggablePersonSticky from '../components/canvas/DraggablePersonSticky';
@@ -22,6 +21,8 @@ const EventCanvas = () => {
 
   const [isIpModalOpen, setIsIpModalOpen] = useState(false);
   const [newIpName, setNewIpName] = useState('');
+  const [newIpProducer, setNewIpProducer] = useState('');
+  const [newIpDirector, setNewIpDirector] = useState('');
   const [isAddPersonModalOpen, setIsAddPersonModalOpen] = useState(false);
   const [isAddCompanyModalOpen, setIsAddCompanyModalOpen] = useState(false);
   const [selectedPersonMemo, setSelectedPersonMemo] = useState<PersonMemo | null>(null);
@@ -295,11 +296,23 @@ const EventCanvas = () => {
     setIpAssets(prev => [...prev, newAsset]);
 
     const maxZIndex = currentProject.placedItems.reduce((max, item) => Math.max(max, item.zIndex), 0);
-    const newItem: PlacedIpItem = { type: 'ip', uniqueId: uuidv4(), assetId: newAsset.id, author: currentUser.name, position: { x: 150, y: 150 }, size: { width: 160, height: 192 }, zIndex: maxZIndex + 1, note: '' };
+
+    // プロデューサー・ディレクター情報をnoteに保存
+    let noteText = '';
+    if (newIpProducer.trim() || newIpDirector.trim()) {
+      const parts = [];
+      if (newIpProducer.trim()) parts.push(`プロデューサー：${newIpProducer}`);
+      if (newIpDirector.trim()) parts.push(`ディレクター：${newIpDirector}`);
+      noteText = parts.join('\n');
+    }
+
+    const newItem: PlacedIpItem = { type: 'ip', uniqueId: uuidv4(), assetId: newAsset.id, author: currentUser.name, position: { x: 150, y: 150 }, size: { width: 160, height: 192 }, zIndex: maxZIndex + 1, note: noteText };
     const updatedProjects = projects.map((p) => (p.id === projectId ? { ...p, placedItems: [...p.placedItems, newItem] } : p));
     setProjects(updatedProjects);
 
     setNewIpName('');
+    setNewIpProducer('');
+    setNewIpDirector('');
     setIsIpModalOpen(false);
   };
 
@@ -369,10 +382,14 @@ const EventCanvas = () => {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      <Sidebar />
       <div className="flex-1 flex flex-col">
-        <header className="bg-white shadow-sm p-4 border-b border-gray-200 flex justify-between items-center">
+        <header className="shadow-sm p-4 border-b border-gray-200 flex justify-between items-center" style={{ backgroundColor: '#ffff95ff' }}>
           <div className="flex items-center gap-4">
+            <img
+              src="/assets/logo_mbs_synergy.png"
+              alt="MBS Synergy Logo"
+              className="h-10 w-auto"
+            />
             <Link to="/" className="p-2 rounded-full hover:bg-gray-200 transition-colors">
               <ArrowLeft size={24} />
             </Link>
@@ -411,38 +428,38 @@ const EventCanvas = () => {
             </div>
             <Link
               to={`/projects/${projectId}/chat`}
-              className="flex items-center gap-2 bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-all duration-200"
+              className="flex items-center gap-1 bg-purple-500 hover:bg-purple-600 text-white font-semibold py-1.5 px-3 rounded text-sm shadow-md transition-all duration-200"
             >
-              <MessageSquare size={20} />
-              プロジェクトチャット
+              <MessageSquare size={16} />
+              チャット
             </Link>
             <button
               onClick={() => setIsIpModalOpen(true)}
-              className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-all duration-200"
+              className="flex items-center gap-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-1.5 px-3 rounded text-sm shadow-md transition-all duration-200"
             >
-              <FilePlus size={20} />
-              IP付箋を追加
+              <FilePlus size={16} />
+              IP追加
             </button>
             <button
               onClick={handleAddNewIdea}
-              className="flex items-center gap-2 bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-all duration-200"
+              className="flex items-center gap-1 bg-pink-500 hover:bg-pink-600 text-white font-semibold py-1.5 px-3 rounded text-sm shadow-md transition-all duration-200"
             >
-              <Lightbulb size={20} />
-              アイデア付箋を追加
+              <Lightbulb size={16} />
+              アイデア追加
             </button>
             <button
               onClick={() => setIsAddPersonModalOpen(true)}
-              className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-all duration-200"
+              className="flex items-center gap-1 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1.5 px-3 rounded text-sm shadow-md transition-all duration-200"
             >
-              <Users size={20} />
-              人付箋を追加
+              <Users size={16} />
+              人追加
             </button>
             <button
               onClick={() => setIsAddCompanyModalOpen(true)}
-              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-all duration-200"
+              className="flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-1.5 px-3 rounded text-sm shadow-md transition-all duration-200"
             >
-              <Building2 size={20} />
-              会社付箋を追加
+              <Building2 size={16} />
+              会社追加
             </button>
           </div>
         </header>
@@ -493,15 +510,39 @@ const EventCanvas = () => {
       </div>
       <Modal isOpen={isIpModalOpen} onClose={() => setIsIpModalOpen(false)} title="新しいIP付箋を作成">
         <div className="space-y-4">
-          <label htmlFor="ip-name" className="block text-sm font-medium text-gray-700">IP名</label>
-          <input
-            type="text"
-            id="ip-name"
-            value={newIpName}
-            onChange={(e) => setNewIpName(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            placeholder="例：新アニメ「〇〇」"
-          />
+          <div>
+            <label htmlFor="ip-name" className="block text-sm font-medium text-gray-700 mb-1">IP名</label>
+            <input
+              type="text"
+              id="ip-name"
+              value={newIpName}
+              onChange={(e) => setNewIpName(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              placeholder="例：新アニメ「〇〇」"
+            />
+          </div>
+          <div>
+            <label htmlFor="ip-producer" className="block text-sm font-medium text-gray-700 mb-1">プロデューサー</label>
+            <input
+              type="text"
+              id="ip-producer"
+              value={newIpProducer}
+              onChange={(e) => setNewIpProducer(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              placeholder="例：山田太郎"
+            />
+          </div>
+          <div>
+            <label htmlFor="ip-director" className="block text-sm font-medium text-gray-700 mb-1">ディレクター</label>
+            <input
+              type="text"
+              id="ip-director"
+              value={newIpDirector}
+              onChange={(e) => setNewIpDirector(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              placeholder="例：田中花子"
+            />
+          </div>
           <div className="flex justify-end">
             <button
               onClick={handleCreateNewIpAsset}
