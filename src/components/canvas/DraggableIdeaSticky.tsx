@@ -8,13 +8,14 @@ import { useLongPress } from '../../hooks/useLongPress';
 
 interface DraggableIdeaStickyProps {
   item: PlacedIdeaItem;
+  authorEmail?: string;
   onStop: (uniqueId: string, position: { x: number; y: number }) => void;
   onTextChange: (uniqueId: string, text: string) => void;
   onResizeStop: (uniqueId: string, size: { width: string | number; height: string | number }) => void;
   onDelete: (uniqueId: string) => void;
 }
 
-const DraggableIdeaSticky: React.FC<DraggableIdeaStickyProps> = ({ item, onStop, onTextChange, onResizeStop, onDelete }) => {
+const DraggableIdeaSticky: React.FC<DraggableIdeaStickyProps> = ({ item, onStop, onTextChange, onResizeStop, onDelete, authorEmail }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(item.text);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -149,6 +150,19 @@ const DraggableIdeaSticky: React.FC<DraggableIdeaStickyProps> = ({ item, onStop,
               })}
             </p>
           </div>
+
+          {/* 作成者情報 */}
+          {item.author && (
+            <div className="space-y-2 bg-gray-50 p-3 rounded text-xs border border-gray-200">
+              <p className="text-gray-600 font-semibold">メモを作成した人</p>
+              <p className="text-gray-800">{item.author}</p>
+              {authorEmail && (
+                <p className="text-gray-600 flex items-center gap-1">
+                  <Mail size={12} /> {authorEmail}
+                </p>
+              )}
+            </div>
+          )}
 
           {/* 削除ボタン */}
           <div className="pt-4 border-t">

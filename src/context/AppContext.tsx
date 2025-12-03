@@ -14,7 +14,19 @@ const MESSAGES_STORAGE_KEY = 'mbs_app_messages';
 const PROJECT_CHATS_STORAGE_KEY = 'mbs_app_project_chats';
 const MEMO_CHATS_STORAGE_KEY = 'mbs_app_memo_chats';
 
+// デモ用ログインユーザー
+const demoCurrentUser: PersonMemo = {
+  id: 'person_suzuki',
+  name: '鈴木太郎',
+  department: 'グッズ制作部',
+  expertise: ['グッズ制作', 'ブランディング'],
+  email: 'suzuki.taro@mbs.co.jp',
+  phone: '090-1234-5678',
+  pastProjects: ['ごぶごぶ FES', 'ヤンタン周年グッズ'],
+};
+
 interface AppContextType {
+  currentUser: PersonMemo;
   projects: EventProject[];
   setProjects: Dispatch<SetStateAction<EventProject[]>>;
   ipAssets: IpAssetMaster[];
@@ -43,6 +55,8 @@ interface AppContextType {
   addProjectMessage: (projectId: string, author: string, content: string) => void;
   getProjectMessages: (projectId: string) => ProjectMessage[];
   getProjectChatParticipants: (projectId: string) => ProjectChatParticipant[];
+  addProjectChatParticipant: (projectId: string, participant: ProjectChatParticipant) => void;
+  removeProjectChatParticipant: (projectId: string, personId: string) => void;
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -338,15 +352,26 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   };
 
   const addMemoChatParticipant = (memoType: 'person' | 'company', memoId: string, participant: MemoChatParticipant) => {
-    const chat = getOrCreateMemoChat(memoType, memoId);
-    if (!chat.participants.find((p) => p.personId === participant.personId)) {
-      const updatedChats = memoChats.map((c) =>
-        c.memoType === memoType && c.memoId === memoId
-          ? { ...c, participants: [...c.participants, participant] }
-          : c
-      );
-      setMemoChats(updatedChats);
+    const updatedChats = memoChats.map((c) => {
+      if (c.memoType === memoType && c.memoId === memoId) {
+        // 既に参加者が存在するかチェック
+        if (!c.participants.find((p) => p.personId === participant.personId)) {
+          return { ...c, participants: [...c.participants, participant] };
+        }
+      }
+      return c;
+    });
+
+    // チャットが存在しない場合は新規作成
+    if (!memoChats.find((c) => c.memoType === memoType && c.memoId === memoId)) {
+      updatedChats.push({
+        memoType,
+        memoId,
+        participants: [participant],
+      });
     }
+
+    setMemoChats(updatedChats);
   };
 
   const getMemoChatParticipants = (memoType: 'person' | 'company', memoId: string): MemoChatParticipant[] => {
@@ -501,9 +526,34 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     return chat.messages.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
   };
 
+  const addProjectChatParticipant = (projectId: string, participant: ProjectChatParticipant) => {
+    const updatedChats = projectChats.map((chat) => {
+      if (chat.projectId === projectId) {
+        // Check if participant already exists
+        const exists = chat.participants.find((p) => p.personId === participant.personId);
+        if (!exists) {
+          return { ...chat, participants: [...chat.participants, participant] };
+        }
+      }
+      return chat;
+    });
+    setProjectChats(updatedChats);
+  };
+
+  const removeProjectChatParticipant = (projectId: string, personId: string) => {
+    const updatedChats = projectChats.map((chat) => {
+      if (chat.projectId === projectId) {
+        return { ...chat, participants: chat.participants.filter((p) => p.personId !== personId) };
+      }
+      return chat;
+    });
+    setProjectChats(updatedChats);
+  };
+
   return (
     <AppContext.Provider
       value={{
+        currentUser: demoCurrentUser,
         projects,
         setProjects,
         ipAssets,
@@ -529,6 +579,8 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
         addProjectMessage,
         getProjectMessages,
         getProjectChatParticipants,
+        addProjectChatParticipant,
+        removeProjectChatParticipant,
       }}
     >
       {children}

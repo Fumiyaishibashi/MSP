@@ -9,13 +9,14 @@ import { useLongPress } from '../../hooks/useLongPress';
 interface DraggableIpStickyProps {
   item: PlacedIpItem;
   asset: IpAssetMaster;
+  authorEmail?: string;
   onStop: (uniqueId: string, position: { x: number; y: number }) => void;
   onNoteChange: (uniqueId: string, note: string) => void;
   onResizeStop: (uniqueId: string, size: { width: string | number; height: string | number }) => void;
   onDelete: (uniqueId: string) => void;
 }
 
-const DraggableIpSticky: React.FC<DraggableIpStickyProps> = ({ item, asset, onStop, onNoteChange, onResizeStop, onDelete }) => {
+const DraggableIpSticky: React.FC<DraggableIpStickyProps> = ({ item, asset, onStop, onNoteChange, onResizeStop, onDelete, authorEmail }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editNote, setEditNote] = useState(item.note || '');
@@ -181,6 +182,19 @@ const DraggableIpSticky: React.FC<DraggableIpStickyProps> = ({ item, asset, onSt
             <h3 className="text-lg font-bold text-gray-800 mb-3">連絡先</h3>
             <p className="text-sm text-gray-700">{asset.contact}</p>
           </div>
+
+          {/* 作成者情報 */}
+          {item.author && (
+            <div className="space-y-2 bg-gray-50 p-3 rounded text-xs border border-gray-200">
+              <p className="text-gray-600 font-semibold">メモを作成した人</p>
+              <p className="text-gray-800">{item.author}</p>
+              {authorEmail && (
+                <p className="text-gray-600 flex items-center gap-1">
+                  <Mail size={12} /> {authorEmail}
+                </p>
+              )}
+            </div>
+          )}
 
           {/* 削除ボタン */}
           <div className="pt-4 border-t">

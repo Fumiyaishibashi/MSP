@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Rnd } from 'react-rnd';
 import type { PlacedPersonMemoItem, PersonMemo } from '../../types';
 import Avatar from '../ui/Avatar';
-import { X } from 'lucide-react';
+import { X, MessageSquare } from 'lucide-react';
 import { useLongPress } from '../../hooks/useLongPress';
 
 interface DraggablePersonStickyProps {
@@ -12,6 +12,7 @@ interface DraggablePersonStickyProps {
   onResizeStop: (uniqueId: string, size: { width: string | number; height: string | number }) => void;
   onDelete: (uniqueId: string) => void;
   onOpen: (memo: PersonMemo) => void;
+  onOpenChat: (memo: PersonMemo) => void;
 }
 
 const DraggablePersonSticky: React.FC<DraggablePersonStickyProps> = ({
@@ -21,6 +22,7 @@ const DraggablePersonSticky: React.FC<DraggablePersonStickyProps> = ({
   onResizeStop,
   onDelete,
   onOpen,
+  onOpenChat,
 }) => {
   const [isDraggable, setIsDraggable] = useState(false);
 
@@ -76,6 +78,16 @@ const DraggablePersonSticky: React.FC<DraggablePersonStickyProps> = ({
         >
           <X size={16} />
         </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onOpenChat(memo);
+          }}
+          className="absolute -bottom-2 -right-2 bg-green-500 hover:bg-green-600 text-white rounded-full p-1 transition-colors"
+          title="チャットを開く"
+        >
+          <MessageSquare size={16} />
+        </button>
         <div
           className="flex-grow flex flex-col items-center justify-start pt-2 cursor-pointer"
           onClick={() => onOpen(memo)}
@@ -87,9 +99,9 @@ const DraggablePersonSticky: React.FC<DraggablePersonStickyProps> = ({
           <p className="text-xs text-gray-700 text-center mb-2">{memo.department}</p>
         </div>
 
-        <div className="flex-shrink-0 border-t border-blue-300 pt-2">
+        <div className="flex-shrink-0 border-t border-blue-300 pt-2 flex flex-col flex-grow">
           <p className="text-xs font-semibold text-gray-700 mb-1">専門領域:</p>
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-1 flex-grow">
             {memo.expertise.slice(0, 2).map((exp, idx) => (
               <span key={idx} className="text-xs bg-blue-300 text-gray-800 px-2 py-0.5 rounded truncate">
                 {exp}

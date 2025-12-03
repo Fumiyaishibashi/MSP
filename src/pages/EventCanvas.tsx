@@ -11,10 +11,8 @@ import PersonMemoModal from '../components/modals/PersonMemoModal';
 import CompanyMemoModal from '../components/modals/CompanyMemoModal';
 import ChatModal from '../components/modals/ChatModal';
 import { v4 as uuidv4 } from 'uuid';
-import { ArrowLeft, Lightbulb, FilePlus, MessageSquare, ZoomIn, ZoomOut, Maximize } from 'lucide-react';
+import { ArrowLeft, Lightbulb, FilePlus, MessageSquare, ZoomIn, ZoomOut, Maximize, Users, Building2 } from 'lucide-react';
 import type { PlacedIpItem, PlacedIdeaItem, PlacedPersonMemoItem, PlacedCompanyMemoItem, IpAssetMaster, PersonMemo, CompanyMemo } from '../types';
-
-const dummyAuthors = ['石橋', '田中', '佐藤', '鈴木', '高橋'];
 
 const EventCanvas = () => {
   const { id: projectId } = useParams();
@@ -24,9 +22,30 @@ const EventCanvas = () => {
 
   const [isIpModalOpen, setIsIpModalOpen] = useState(false);
   const [newIpName, setNewIpName] = useState('');
+  const [isAddPersonModalOpen, setIsAddPersonModalOpen] = useState(false);
+  const [isAddCompanyModalOpen, setIsAddCompanyModalOpen] = useState(false);
   const [selectedPersonMemo, setSelectedPersonMemo] = useState<PersonMemo | null>(null);
+  const [selectedPersonMemoAuthor, setSelectedPersonMemoAuthor] = useState<string>('');
   const [selectedCompanyMemo, setSelectedCompanyMemo] = useState<CompanyMemo | null>(null);
+  const [selectedCompanyMemoAuthor, setSelectedCompanyMemoAuthor] = useState<string>('');
   const [chatMemo, setChatMemo] = useState<{ type: 'person' | 'company'; memo: PersonMemo | CompanyMemo } | null>(null);
+
+  // 新規人付箋用のform state
+  const [newPersonForm, setNewPersonForm] = useState({
+    name: '',
+    department: '',
+    expertise: [] as string[],
+    email: '',
+    phone: '',
+    pastProjects: [] as string[],
+  });
+
+  // 新規会社付箋用のform state
+  const [newCompanyForm, setNewCompanyForm] = useState({
+    name: '',
+    specialty: [] as string[],
+    pastProjects: [] as string[],
+  });
 
   // ズーム機能用state
   const [zoom, setZoom] = useState(1);
@@ -37,7 +56,7 @@ const EventCanvas = () => {
     return <div>Context is not available.</div>;
   }
 
-  const { projects, setProjects, ipAssets, setIpAssets, personMemos, companyMemos } = context;
+  const { projects, setProjects, ipAssets, setIpAssets, personMemos, companyMemos, currentUser } = context;
   const currentProject = projects.find((p) => p.id === projectId);
 
   // スムーズズームアニメーション
@@ -54,8 +73,6 @@ const EventCanvas = () => {
 
     return () => cancelAnimationFrame(animationFrame);
   }, [zoom, targetZoom]);
-
-  const getRandomAuthor = () => dummyAuthors[Math.floor(Math.random() * dummyAuthors.length)];
 
   // ズーム操作
   const handleZoom = (delta: number) => {
@@ -126,7 +143,7 @@ const EventCanvas = () => {
     const dropAreaBounds = dropAreaRef.current.getBoundingClientRect();
     const position = { x: e.clientX - dropAreaBounds.left, y: e.clientY - dropAreaBounds.top };
     const maxZIndex = currentProject.placedItems.reduce((max, item) => Math.max(max, item.zIndex), 0);
-    const author = getRandomAuthor();
+    const author = currentUser.name;
 
     try {
       // Try to parse as JSON for person/company memos
@@ -184,9 +201,84 @@ const EventCanvas = () => {
   const handleAddNewIdea = () => {
     if (!currentProject) return;
     const maxZIndex = currentProject.placedItems.reduce((max, item) => Math.max(max, item.zIndex), 0);
-    const newItem: PlacedIdeaItem = { type: 'idea', uniqueId: uuidv4(), text: '新しいアイデア', author: getRandomAuthor(), position: { x: 100, y: 100 }, size: { width: 192, height: 160 }, zIndex: maxZIndex + 1 };
+    const newItem: PlacedIdeaItem = { type: 'idea', uniqueId: uuidv4(), text: '新しいアイデア', author: currentUser.name, position: { x: 100, y: 100 }, size: { width: 192, height: 160 }, zIndex: maxZIndex + 1 };
     const updatedProjects = projects.map((p) => (p.id === projectId ? { ...p, placedItems: [...p.placedItems, newItem] } : p));
     setProjects(updatedProjects);
+  };
+
+  const handleCreatePersonSticky = () => {
+    if (!newPersonForm.name.trim() || !newPersonForm.email.trim() || !currentProject) return;
+
+    const newPerson: PersonMemo = {
+      id: `person_custom_${uuidv4()}`,
+      name: newPersonForm.name,
+      department: newPersonForm.department,
+      expertise: newPersonForm.expertise.filter((e) => e.trim()),
+      email: newPersonForm.email,
+      phone: newPersonForm.phone,
+      pastProjects: newPersonForm.pastProjects.filter((p) => p.trim()),
+    };
+
+    context.setPersonMemos((prev) => [...prev, newPerson]);
+
+    const maxZIndex = currentProject.placedItems.reduce((max, item) => Math.max(max, item.zIndex), 0);
+    const newItem: PlacedPersonMemoItem = {
+      type: 'person',
+      uniqueId: uuidv4(),
+      memoId: newPerson.id,
+      author: currentUser.name,
+      position: { x: 150, y: 150 },
+      size: { width: 160, height: 200 },
+      zIndex: maxZIndex + 1,
+    };
+
+    const updatedProjects = projects.map((p) => (p.id === projectId ? { ...p, placedItems: [...p.placedItems, newItem] } : p));
+    setProjects(updatedProjects);
+
+    setNewPersonForm({
+      name: '',
+      department: '',
+      expertise: [],
+      email: '',
+      phone: '',
+      pastProjects: [],
+    });
+    setIsAddPersonModalOpen(false);
+  };
+
+  const handleCreateCompanySticky = () => {
+    if (!newCompanyForm.name.trim() || !currentProject) return;
+
+    const newCompany: CompanyMemo = {
+      id: `company_custom_${uuidv4()}`,
+      name: newCompanyForm.name,
+      specialty: newCompanyForm.specialty.filter((s) => s.trim()),
+      pastProjects: newCompanyForm.pastProjects.filter((p) => p.trim()),
+      pointOfContact: [],
+    };
+
+    context.setCompanyMemos((prev) => [...prev, newCompany]);
+
+    const maxZIndex = currentProject.placedItems.reduce((max, item) => Math.max(max, item.zIndex), 0);
+    const newItem: PlacedCompanyMemoItem = {
+      type: 'company',
+      uniqueId: uuidv4(),
+      memoId: newCompany.id,
+      author: currentUser.name,
+      position: { x: 200, y: 200 },
+      size: { width: 160, height: 200 },
+      zIndex: maxZIndex + 1,
+    };
+
+    const updatedProjects = projects.map((p) => (p.id === projectId ? { ...p, placedItems: [...p.placedItems, newItem] } : p));
+    setProjects(updatedProjects);
+
+    setNewCompanyForm({
+      name: '',
+      specialty: [],
+      pastProjects: [],
+    });
+    setIsAddCompanyModalOpen(false);
   };
 
   const handleCreateNewIpAsset = () => {
@@ -203,7 +295,7 @@ const EventCanvas = () => {
     setIpAssets(prev => [...prev, newAsset]);
 
     const maxZIndex = currentProject.placedItems.reduce((max, item) => Math.max(max, item.zIndex), 0);
-    const newItem: PlacedIpItem = { type: 'ip', uniqueId: uuidv4(), assetId: newAsset.id, author: getRandomAuthor(), position: { x: 150, y: 150 }, size: { width: 160, height: 192 }, zIndex: maxZIndex + 1, note: '' };
+    const newItem: PlacedIpItem = { type: 'ip', uniqueId: uuidv4(), assetId: newAsset.id, author: currentUser.name, position: { x: 150, y: 150 }, size: { width: 160, height: 192 }, zIndex: maxZIndex + 1, note: '' };
     const updatedProjects = projects.map((p) => (p.id === projectId ? { ...p, placedItems: [...p.placedItems, newItem] } : p));
     setProjects(updatedProjects);
 
@@ -338,6 +430,20 @@ const EventCanvas = () => {
               <Lightbulb size={20} />
               アイデア付箋を追加
             </button>
+            <button
+              onClick={() => setIsAddPersonModalOpen(true)}
+              className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-all duration-200"
+            >
+              <Users size={20} />
+              人付箋を追加
+            </button>
+            <button
+              onClick={() => setIsAddCompanyModalOpen(true)}
+              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-all duration-200"
+            >
+              <Building2 size={20} />
+              会社付箋を追加
+            </button>
           </div>
         </header>
         <main
@@ -365,20 +471,20 @@ const EventCanvas = () => {
             if (item.type === 'ip') {
               const asset = ipAssets.find((m) => m.id === item.assetId);
               if (!asset) return null;
-              return <DraggableIpSticky key={item.uniqueId} item={item} asset={asset} onStop={handleDragStop} onNoteChange={handleIpNoteChange} onResizeStop={handleResizeStop} onDelete={handleDeleteItem} />;
+              return <DraggableIpSticky key={item.uniqueId} item={item} asset={asset} authorEmail={currentUser.email} onStop={handleDragStop} onNoteChange={handleIpNoteChange} onResizeStop={handleResizeStop} onDelete={handleDeleteItem} />;
             }
             if (item.type === 'idea') {
-              return <DraggableIdeaSticky key={item.uniqueId} item={item} onStop={handleDragStop} onTextChange={handleIdeaTextChange} onResizeStop={handleResizeStop} onDelete={handleDeleteItem} />;
+              return <DraggableIdeaSticky key={item.uniqueId} item={item} authorEmail={currentUser.email} onStop={handleDragStop} onTextChange={handleIdeaTextChange} onResizeStop={handleResizeStop} onDelete={handleDeleteItem} />;
             }
             if (item.type === 'person') {
               const memo = personMemos.find((m) => m.id === item.memoId);
               if (!memo) return null;
-              return <DraggablePersonSticky key={item.uniqueId} item={item} memo={memo} onStop={handleDragStop} onResizeStop={handleResizeStop} onDelete={handleDeleteItem} onOpen={setSelectedPersonMemo} />;
+              return <DraggablePersonSticky key={item.uniqueId} item={item} memo={memo} onStop={handleDragStop} onResizeStop={handleResizeStop} onDelete={handleDeleteItem} onOpen={(memo) => { setSelectedPersonMemo(memo); setSelectedPersonMemoAuthor(item.author); }} onOpenChat={(memo) => setChatMemo({ type: 'person', memo })} />;
             }
             if (item.type === 'company') {
               const memo = companyMemos.find((m) => m.id === item.memoId);
               if (!memo) return null;
-              return <DraggableCompanySticky key={item.uniqueId} item={item} memo={memo} onStop={handleDragStop} onResizeStop={handleResizeStop} onDelete={handleDeleteItem} onOpen={setSelectedCompanyMemo} />;
+              return <DraggableCompanySticky key={item.uniqueId} item={item} memo={memo} onStop={handleDragStop} onResizeStop={handleResizeStop} onDelete={handleDeleteItem} onOpen={(memo) => { setSelectedCompanyMemo(memo); setSelectedCompanyMemoAuthor(item.author); }} onOpenChat={(memo) => setChatMemo({ type: 'company', memo })} />;
             }
             return null;
           })}
@@ -407,10 +513,149 @@ const EventCanvas = () => {
         </div>
       </Modal>
 
+      <Modal isOpen={isAddPersonModalOpen} onClose={() => setIsAddPersonModalOpen(false)} title="新しい人付箋を作成">
+        <div className="space-y-4">
+          <div>
+            <label htmlFor="person-name" className="block text-sm font-medium text-gray-700 mb-1">名前</label>
+            <input
+              type="text"
+              id="person-name"
+              value={newPersonForm.name}
+              onChange={(e) => setNewPersonForm({ ...newPersonForm, name: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="山田太郎"
+            />
+          </div>
+          <div>
+            <label htmlFor="person-dept" className="block text-sm font-medium text-gray-700 mb-1">部門</label>
+            <input
+              type="text"
+              id="person-dept"
+              value={newPersonForm.department}
+              onChange={(e) => setNewPersonForm({ ...newPersonForm, department: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="営業部"
+            />
+          </div>
+          <div>
+            <label htmlFor="person-expertise" className="block text-sm font-medium text-gray-700 mb-1">専門領域（カンマ区切り）</label>
+            <input
+              type="text"
+              id="person-expertise"
+              value={newPersonForm.expertise.join(', ')}
+              onChange={(e) => setNewPersonForm({ ...newPersonForm, expertise: e.target.value.split(',').map(s => s.trim()) })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="営業戦略, ビジネス開発"
+            />
+          </div>
+          <div>
+            <label htmlFor="person-email" className="block text-sm font-medium text-gray-700 mb-1">メールアドレス</label>
+            <input
+              type="email"
+              id="person-email"
+              value={newPersonForm.email}
+              onChange={(e) => setNewPersonForm({ ...newPersonForm, email: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="yamada@example.com"
+            />
+          </div>
+          <div>
+            <label htmlFor="person-phone" className="block text-sm font-medium text-gray-700 mb-1">電話番号（任意）</label>
+            <input
+              type="tel"
+              id="person-phone"
+              value={newPersonForm.phone}
+              onChange={(e) => setNewPersonForm({ ...newPersonForm, phone: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="090-1234-5678"
+            />
+          </div>
+          <div>
+            <label htmlFor="person-projects" className="block text-sm font-medium text-gray-700 mb-1">過去実績（カンマ区切り）</label>
+            <textarea
+              id="person-projects"
+              value={newPersonForm.pastProjects.join(', ')}
+              onChange={(e) => setNewPersonForm({ ...newPersonForm, pastProjects: e.target.value.split(',').map(s => s.trim()) })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="プロジェクトA, プロジェクトB"
+              rows={3}
+            />
+          </div>
+          <div className="flex justify-end gap-2">
+            <button
+              onClick={() => setIsAddPersonModalOpen(false)}
+              className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg"
+            >
+              キャンセル
+            </button>
+            <button
+              onClick={handleCreatePersonSticky}
+              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg"
+            >
+              作成
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal isOpen={isAddCompanyModalOpen} onClose={() => setIsAddCompanyModalOpen(false)} title="新しい会社付箋を作成">
+        <div className="space-y-4">
+          <div>
+            <label htmlFor="company-name" className="block text-sm font-medium text-gray-700 mb-1">会社名</label>
+            <input
+              type="text"
+              id="company-name"
+              value={newCompanyForm.name}
+              onChange={(e) => setNewCompanyForm({ ...newCompanyForm, name: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+              placeholder="株式会社〇〇"
+            />
+          </div>
+          <div>
+            <label htmlFor="company-specialty" className="block text-sm font-medium text-gray-700 mb-1">得意分野（カンマ区切り）</label>
+            <input
+              type="text"
+              id="company-specialty"
+              value={newCompanyForm.specialty.join(', ')}
+              onChange={(e) => setNewCompanyForm({ ...newCompanyForm, specialty: e.target.value.split(',').map(s => s.trim()) })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+              placeholder="映像制作, 4K撮影, ドローン撮影"
+            />
+          </div>
+          <div>
+            <label htmlFor="company-projects" className="block text-sm font-medium text-gray-700 mb-1">過去実績（カンマ区切り）</label>
+            <textarea
+              id="company-projects"
+              value={newCompanyForm.pastProjects.join(', ')}
+              onChange={(e) => setNewCompanyForm({ ...newCompanyForm, pastProjects: e.target.value.split(',').map(s => s.trim()) })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+              placeholder="プロジェクトA, プロジェクトB"
+              rows={3}
+            />
+          </div>
+          <div className="flex justify-end gap-2">
+            <button
+              onClick={() => setIsAddCompanyModalOpen(false)}
+              className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg"
+            >
+              キャンセル
+            </button>
+            <button
+              onClick={handleCreateCompanySticky}
+              className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg"
+            >
+              作成
+            </button>
+          </div>
+        </div>
+      </Modal>
+
       <PersonMemoModal
         memo={selectedPersonMemo}
+        authorName={selectedPersonMemoAuthor}
+        authorEmail={currentUser.email}
         isOpen={selectedPersonMemo !== null}
-        onClose={() => setSelectedPersonMemo(null)}
+        onClose={() => { setSelectedPersonMemo(null); setSelectedPersonMemoAuthor(''); }}
         onOpenChat={(memo) => setChatMemo({ type: 'person', memo })}
         onDelete={(memoId) => {
           const updatedProject = {
@@ -419,13 +664,16 @@ const EventCanvas = () => {
           };
           setProjects(projects.map(p => p.id === projectId ? updatedProject : p));
           setSelectedPersonMemo(null);
+          setSelectedPersonMemoAuthor('');
         }}
       />
 
       <CompanyMemoModal
         memo={selectedCompanyMemo}
+        authorName={selectedCompanyMemoAuthor}
+        authorEmail={currentUser.email}
         isOpen={selectedCompanyMemo !== null}
-        onClose={() => setSelectedCompanyMemo(null)}
+        onClose={() => { setSelectedCompanyMemo(null); setSelectedCompanyMemoAuthor(''); }}
         onOpenChat={(memo) => setChatMemo({ type: 'company', memo })}
         onDelete={(memoId) => {
           const updatedProject = {
@@ -434,6 +682,7 @@ const EventCanvas = () => {
           };
           setProjects(projects.map(p => p.id === projectId ? updatedProject : p));
           setSelectedCompanyMemo(null);
+          setSelectedCompanyMemoAuthor('');
         }}
       />
 

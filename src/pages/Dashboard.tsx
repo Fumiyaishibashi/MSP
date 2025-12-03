@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { AppContext } from '../context/AppContext';
 import { v4 as uuidv4 } from 'uuid';
-import { Plus, RotateCcw } from 'lucide-react';
+import { Plus, RotateCcw, User } from 'lucide-react';
 import EventStickyCard from '../components/canvas/EventStickyCard';
 
 const Dashboard = () => {
@@ -11,7 +11,7 @@ const Dashboard = () => {
     return <div>Loading...</div>;
   }
 
-  const { projects, setProjects } = context;
+  const { projects, setProjects, currentUser } = context;
 
   const handleAddNewProject = () => {
     const newProject = {
@@ -34,8 +34,21 @@ const Dashboard = () => {
 
   return (
     <div className="p-8">
-      <header className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">MBS Synergy Platform</h1>
+      <header className="mb-8">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold text-gray-800">MBS Synergy Platform</h1>
+          <div className="flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-lg border border-blue-200">
+            <User size={20} className="text-blue-600" />
+            <div>
+              <p className="text-sm text-gray-600">ログイン中</p>
+              <p className="font-bold text-gray-800">{currentUser.name}</p>
+            </div>
+            <div className="ml-4 text-right text-sm">
+              <p className="text-gray-600">{currentUser.department}</p>
+              <p className="text-blue-600 font-semibold">{currentUser.email}</p>
+            </div>
+          </div>
+        </div>
         <div className="flex items-center gap-4">
           <button
             onClick={handleResetDemo}

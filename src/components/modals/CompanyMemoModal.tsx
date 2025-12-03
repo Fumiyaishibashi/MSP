@@ -5,13 +5,15 @@ import { Mail, Copy, MessageCircle, User, Trash2 } from 'lucide-react';
 
 interface CompanyMemoModalProps {
   memo: CompanyMemo | null;
+  authorName: string;
+  authorEmail: string;
   isOpen: boolean;
   onClose: () => void;
   onOpenChat: (memo: CompanyMemo) => void;
   onDelete?: (memoId: string) => void;
 }
 
-const CompanyMemoModal: React.FC<CompanyMemoModalProps> = ({ memo, isOpen, onClose, onOpenChat, onDelete }) => {
+const CompanyMemoModal: React.FC<CompanyMemoModalProps> = ({ memo, isOpen, onClose, onOpenChat, onDelete, authorName, authorEmail }) => {
   if (!memo) return null;
 
   const handleCopyContactEmail = (email: string) => {
@@ -20,8 +22,10 @@ const CompanyMemoModal: React.FC<CompanyMemoModalProps> = ({ memo, isOpen, onClo
   };
 
   const handleOpenChat = () => {
-    onOpenChat(memo);
     onClose();
+    setTimeout(() => {
+      onOpenChat(memo);
+    }, 100);
   };
 
   return (
@@ -95,6 +99,17 @@ const CompanyMemoModal: React.FC<CompanyMemoModalProps> = ({ memo, isOpen, onClo
             ))}
           </div>
         </div>
+
+        {/* Creator Information */}
+        {authorName && (
+          <div className="space-y-2 bg-gray-50 p-3 rounded text-xs border border-gray-200">
+            <p className="text-gray-600 font-semibold">メモを作成した人</p>
+            <p className="text-gray-800">{authorName}</p>
+            <p className="text-gray-600 flex items-center gap-1">
+              <Mail size={12} /> {authorEmail}
+            </p>
+          </div>
+        )}
 
         {/* Action Buttons */}
         <div className="space-y-3 pt-4 border-t border-gray-200">

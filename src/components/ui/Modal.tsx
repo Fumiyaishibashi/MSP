@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import type { ReactNode } from 'react';
 import { X } from 'lucide-react';
 
@@ -21,7 +22,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title, size = 
     large: 'max-w-2xl',
   };
 
-  return (
+  const modalContent = (
     <div
       // オーバーレイ
       className="fixed inset-0 bg-black bg-opacity-50 z-40 flex justify-center items-center"
@@ -47,6 +48,9 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title, size = 
       </div>
     </div>
   );
+
+  // document.body に直接マウントして、親要素のスクロール・ズームの影響を受けないようにする
+  return createPortal(modalContent, document.body);
 };
 
 export default Modal;

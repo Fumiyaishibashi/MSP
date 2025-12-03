@@ -5,13 +5,15 @@ import { Mail, Phone, Copy, MessageCircle, Trash2 } from 'lucide-react';
 
 interface PersonMemoModalProps {
   memo: PersonMemo | null;
+  authorName: string;
+  authorEmail: string;
   isOpen: boolean;
   onClose: () => void;
   onOpenChat: (memo: PersonMemo) => void;
   onDelete?: (memoId: string) => void;
 }
 
-const PersonMemoModal: React.FC<PersonMemoModalProps> = ({ memo, isOpen, onClose, onOpenChat, onDelete }) => {
+const PersonMemoModal: React.FC<PersonMemoModalProps> = ({ memo, isOpen, onClose, onOpenChat, onDelete, authorName, authorEmail }) => {
   if (!memo) return null;
 
   const handleCopyEmail = () => {
@@ -27,8 +29,10 @@ const PersonMemoModal: React.FC<PersonMemoModalProps> = ({ memo, isOpen, onClose
   };
 
   const handleOpenChat = () => {
-    onOpenChat(memo);
     onClose();
+    setTimeout(() => {
+      onOpenChat(memo);
+    }, 100);
   };
 
   return (
@@ -110,6 +114,17 @@ const PersonMemoModal: React.FC<PersonMemoModalProps> = ({ memo, isOpen, onClose
             ))}
           </ul>
         </div>
+
+        {/* Creator Information */}
+        {authorName && (
+          <div className="space-y-2 bg-gray-50 p-3 rounded text-xs border border-gray-200">
+            <p className="text-gray-600 font-semibold">メモを作成した人</p>
+            <p className="text-gray-800">{authorName}</p>
+            <p className="text-gray-600 flex items-center gap-1">
+              <Mail size={12} /> {authorEmail}
+            </p>
+          </div>
+        )}
 
         {/* Action Buttons */}
         <div className="space-y-3 pt-4 border-t border-gray-200">
