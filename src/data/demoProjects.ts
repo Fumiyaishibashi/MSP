@@ -44,7 +44,7 @@ export const demoProjects: EventProject[] = [
         type: "ip",
         uniqueId: "placed-prebato",
         assetId: "ip_prebato",
-        author: "佐藤",
+        author: "佐藤次郎",
         position: {
           x: 650,
           y: 100,
@@ -123,7 +123,7 @@ export const demoProjects: EventProject[] = [
         type: "idea",
         uniqueId: "idea-1",
         text: "もっと若者向けの企画も欲しいかも？",
-        author: "佐藤",
+        author: "佐藤次郎",
         position: {
           x: 50,
           y: 300,
@@ -291,8 +291,8 @@ export const demoProjects: EventProject[] = [
         assetId: "resource_kitchencar",
         author: "鈴木",
         position: {
-          x: 40,
-          y: 356,
+          x: 348,
+          y: 514,
         },
         size: {
           width: "160px",
@@ -322,8 +322,8 @@ export const demoProjects: EventProject[] = [
         memoId: "person_yoshikawa",
         author: "石橋太郎",
         position: {
-          x: 381,
-          y: 261,
+          x: 33,
+          y: 279,
         },
         size: {
           width: "180px",
@@ -337,8 +337,8 @@ export const demoProjects: EventProject[] = [
         text: "吉川さんに相談\n→ あれみた番組での\n実績を聞く\n→ キッチンカー出したことあるらしい",
         author: "鈴木",
         position: {
-          x: 183,
-          y: 309,
+          x: 175,
+          y: 223,
         },
         size: {
           width: 200,
@@ -382,8 +382,8 @@ export const demoProjects: EventProject[] = [
         memoId: "company_catering",
         author: "石橋太郎",
         position: {
-          x: 299,
-          y: 459,
+          x: 406,
+          y: 328,
         },
         size: {
           width: 200,
@@ -442,8 +442,8 @@ export const demoProjects: EventProject[] = [
         memoId: "person_yamamoto",
         author: "佐藤",
         position: {
-          x: 486,
-          y: 510,
+          x: 276,
+          y: 361,
         },
         size: {
           width: 160,
