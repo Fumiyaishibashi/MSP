@@ -28,7 +28,7 @@ export const demoProjects: EventProject[] = [
         type: "ip",
         uniqueId: "placed-gobugobu",
         assetId: "ip_gobugobu",
-        author: "鈴木",
+        author: "鈴木太郎",
         position: {
           x: 80,
           y: 80,
@@ -138,7 +138,7 @@ export const demoProjects: EventProject[] = [
         type: "idea",
         uniqueId: "idea-2",
         text: "フェスのフードどうする？\nキッチンカーとか？",
-        author: "鈴木",
+        author: "鈴木太郎",
         position: {
           x: 700,
           y: 280,
@@ -225,7 +225,7 @@ export const demoProjects: EventProject[] = [
         type: "ip",
         uniqueId: "gobu-host",
         assetId: "ip_gobugobu",
-        author: "鈴木",
+        author: "鈴木太郎",
         position: {
           x: 12,
           y: 20,
@@ -259,8 +259,8 @@ export const demoProjects: EventProject[] = [
         assetId: "resource_vr",
         author: "高橋",
         position: {
-          x: 817,
-          y: 526,
+          x: 940,
+          y: 521,
         },
         size: {
           width: 160,
@@ -289,10 +289,10 @@ export const demoProjects: EventProject[] = [
         type: "ip",
         uniqueId: "gobu-kitchen",
         assetId: "resource_kitchencar",
-        author: "鈴木",
+        author: "鈴木太郎",
         position: {
-          x: 348,
-          y: 514,
+          x: 594,
+          y: 479,
         },
         size: {
           width: "160px",
@@ -335,7 +335,7 @@ export const demoProjects: EventProject[] = [
         type: "idea",
         uniqueId: "gobu-idea-connection1",
         text: "吉川さんに相談\n→ あれみた番組での\n実績を聞く\n→ キッチンカー出したことあるらしい",
-        author: "鈴木",
+        author: "鈴木太郎",
         position: {
           x: 175,
           y: 223,
@@ -382,8 +382,8 @@ export const demoProjects: EventProject[] = [
         memoId: "company_catering",
         author: "石橋太郎",
         position: {
-          x: 406,
-          y: 328,
+          x: 438,
+          y: 355,
         },
         size: {
           width: 200,
@@ -412,8 +412,8 @@ export const demoProjects: EventProject[] = [
         text: "VR配信\nフェス全景を\n360度配信",
         author: "高橋",
         position: {
-          x: 943,
-          y: 441,
+          x: 1045,
+          y: 436,
         },
         size: {
           width: "160px",
@@ -427,8 +427,8 @@ export const demoProjects: EventProject[] = [
         memoId: "person_ito",
         author: "石橋太郎",
         position: {
-          x: 1051,
-          y: 538,
+          x: 1108,
+          y: 524,
         },
         size: {
           width: "160px",
@@ -440,7 +440,7 @@ export const demoProjects: EventProject[] = [
         type: "person",
         uniqueId: "9b522a8c-4230-4684-931d-43e0146208a2",
         memoId: "person_yamamoto",
-        author: "佐藤",
+        author: "佐藤太郎",
         position: {
           x: 276,
           y: 361,
