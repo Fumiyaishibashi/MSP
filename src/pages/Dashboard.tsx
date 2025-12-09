@@ -28,7 +28,19 @@ const Dashboard = () => {
 
   const handleResetDemo = () => {
     if (window.confirm('現在の配置情報はすべてリセットされます。よろしいですか？')) {
+      // すべてのMBSアプリデータをクリア
       localStorage.removeItem('mbs_app_data');
+      localStorage.removeItem('mbs_app_data_projects');
+      localStorage.removeItem('mbs_app_assets');
+      localStorage.removeItem('mbs_app_person_memos');
+      localStorage.removeItem('mbs_app_company_memos');
+      localStorage.removeItem('mbs_app_messages');
+      localStorage.removeItem('mbs_app_project_chats');
+      localStorage.removeItem('mbs_app_memo_chats');
+      localStorage.removeItem('mbs_app_wishs');
+      localStorage.removeItem('mbs_app_match_groups');
+      localStorage.removeItem('mbs_app_brainstorm_teams');
+      localStorage.removeItem('mbs_app_team_messages');
       window.location.reload();
     }
   };
@@ -67,27 +79,87 @@ const Dashboard = () => {
       </header>
 
       <main className="max-w-7xl mx-auto px-8 py-12">
-        {/* Brainstorm Board CTA */}
-        <div className="mb-10 p-6 bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 rounded-2xl shadow-sm hover:shadow-md transition-all">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
-                <Lightbulb size={28} className="text-white" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-gray-900 mb-1">2026年 ブレストボード</h3>
-                <p className="text-gray-700">
-                  MBSグループが実現したい企画を願いとして提出し、マッチング・チーム形成しましょう
-                </p>
+        {/* Brainstorm Boards Section */}
+        <div className="mb-10">
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">ブレストテーマ一覧</h2>
+              <p className="text-gray-600">
+                テーマごとに願いを投稿し、マッチング・チーム形成を行いましょう
+              </p>
+            </div>
+            <button
+              onClick={() => alert('新規テーマ作成機能は開発中です')}
+              className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-2.5 px-5 rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+            >
+              <Plus size={18} />
+              新規テーマ作成
+            </button>
+          </div>
+
+          {/* Brainstorm Boards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+            {/* 2026年 ブレストボード */}
+            <div className="p-6 bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 rounded-2xl shadow-sm hover:shadow-md transition-all">
+              <div className="flex flex-col h-full">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center flex-shrink-0">
+                    <Lightbulb size={28} className="text-white" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-xl font-bold text-gray-900 mb-1">2026年 ブレストボード</h3>
+                    <p className="text-gray-700 text-sm">
+                      MBSグループが実現したい企画を願いとして提出
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-auto pt-4 border-t border-amber-300/50">
+                  <div className="flex items-center justify-between text-sm text-gray-600 mb-3">
+                    <span>願い: 30件</span>
+                    <span>マッチング: 1組</span>
+                    <span>チーム: 1</span>
+                  </div>
+                  <Link
+                    to="/brainstorm"
+                    className="flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold py-2.5 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 w-full"
+                  >
+                    <Lightbulb size={18} />
+                    ブレストを開く
+                  </Link>
+                </div>
               </div>
             </div>
-            <Link
-              to="/brainstorm"
-              className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 whitespace-nowrap"
-            >
-              <Lightbulb size={20} />
-              ブレストを開く
-            </Link>
+
+            {/* 2030年までに実現したいもの ブレストボード */}
+            <div className="p-6 bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 rounded-2xl shadow-sm hover:shadow-md transition-all">
+              <div className="flex flex-col h-full">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center flex-shrink-0">
+                    <Lightbulb size={28} className="text-white" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-xl font-bold text-gray-900 mb-1">2030年までに実現したいもの</h3>
+                    <p className="text-gray-700 text-sm">
+                      中長期的なビジョンとアイデアを共有しましょう
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-auto pt-4 border-t border-purple-300/50">
+                  <div className="flex items-center justify-between text-sm text-gray-600 mb-3">
+                    <span>願い: 0件</span>
+                    <span>マッチング: 0組</span>
+                    <span>チーム: 0</span>
+                  </div>
+                  <button
+                    onClick={() => alert('このテーマはデモ用です。ブレストボードには遷移しません')}
+                    className="flex items-center justify-center gap-2 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white font-bold py-2.5 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 w-full"
+                  >
+                    <Lightbulb size={18} />
+                    ブレストを開く
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 

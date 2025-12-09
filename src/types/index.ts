@@ -159,6 +159,9 @@ export interface Wish {
   zIndex: number;
   comments?: WishComment[]; // 願いに対するコメント（Phase 1.5+）
   stickyColor?: string; // 付箋の色（Tailwind色クラス）
+  isPersonalOffer?: boolean; // 人材メモ（個人の協力提案）かどうか
+  avatarImage?: string; // 人材メモの場合の写真パス
+  isCompanyWish?: boolean; // 会社メモ（企業の願い）かどうか
 }
 
 // 10b. ブレストボード - 願いへのコメント

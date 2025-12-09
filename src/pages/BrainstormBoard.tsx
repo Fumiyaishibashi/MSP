@@ -1,7 +1,7 @@
 import { useContext, useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
-import { Plus, ArrowLeft, Grid3x3, List, ZoomIn, ZoomOut, Maximize, X } from 'lucide-react';
+import { Plus, ArrowLeft, Grid3x3, List, ZoomIn, ZoomOut, Maximize, X, RotateCcw } from 'lucide-react';
 import WishModal from '../components/modals/WishModal';
 import TeamCreationModal from '../components/modals/TeamCreationModal';
 import TeamChatModal from '../components/modals/TeamChatModal';
@@ -256,13 +256,30 @@ const BrainstormBoard = () => {
               </div>
             )}
           </div>
-          <button
-            onClick={() => setShowWishModal(true)}
-            className="flex items-center gap-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold px-4 py-1.5 rounded-lg text-sm shadow-md transition-all hover:scale-105"
-          >
-            <Plus size={16} />
-            願いを追加
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                if (window.confirm('デモデータをリロードします。現在の変更は失われます。よろしいですか？')) {
+                  localStorage.removeItem('mbs_app_wishs');
+                  localStorage.removeItem('mbs_app_match_groups');
+                  localStorage.removeItem('mbs_app_brainstorm_teams');
+                  localStorage.removeItem('mbs_app_team_messages');
+                  window.location.reload();
+                }
+              }}
+              className="flex items-center gap-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold px-4 py-1.5 rounded-lg text-sm border border-gray-300 transition-all"
+            >
+              <RotateCcw size={16} />
+              デモリセット
+            </button>
+            <button
+              onClick={() => setShowWishModal(true)}
+              className="flex items-center gap-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold px-4 py-1.5 rounded-lg text-sm shadow-md transition-all hover:scale-105"
+            >
+              <Plus size={16} />
+              願いを追加
+            </button>
+          </div>
         </div>
 
         {/* Content Area */}

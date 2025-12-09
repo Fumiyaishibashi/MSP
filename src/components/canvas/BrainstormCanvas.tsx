@@ -452,10 +452,27 @@ const BrainstormCanvas: React.FC<BrainstormCanvasProps> = ({ wishs, zoom = 1 }) 
               >
                 {/* Drag Handle */}
                 <div className="wish-drag-handle cursor-move mb-1 pb-1 border-b-2 border-gray-400 flex-shrink-0">
-                  <div className="flex justify-between items-start gap-1">
-                    <h3 className="font-bold text-sm text-gray-800 flex-1 line-clamp-2">
-                      {wish.title}
-                    </h3>
+                  <div className="flex justify-between items-start gap-2">
+                    <div className="flex items-start gap-2 flex-1 min-w-0">
+                      {/* 人材メモの場合はアバター写真を表示 */}
+                      {wish.isPersonalOffer && wish.avatarImage && (
+                        <img
+                          src={wish.avatarImage}
+                          alt={wish.author}
+                          className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-md flex-shrink-0"
+                        />
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-sm text-gray-800 line-clamp-2">
+                          {wish.title}
+                        </h3>
+                        {wish.isPersonalOffer && (
+                          <span className="inline-block text-xs bg-gradient-to-r from-blue-500 to-purple-500 text-white px-2 py-0.5 rounded-full font-semibold mt-0.5">
+                            👤 人材メモ
+                          </span>
+                        )}
+                      </div>
+                    </div>
                     <div className="flex-shrink-0 flex items-center gap-1">
                       {wish.comments && wish.comments.length > 0 && (
                         <span className="text-xs bg-blue-400 text-white px-1.5 py-0.5 rounded-full font-bold whitespace-nowrap">
@@ -497,8 +514,16 @@ const BrainstormCanvas: React.FC<BrainstormCanvasProps> = ({ wishs, zoom = 1 }) 
                 </div>
 
                 {/* Footer */}
-                <div className="flex justify-between items-center text-xs text-gray-600 border-t border-gray-300 pt-1 mt-auto flex-shrink-0">
+                <div className="relative flex justify-between items-end text-xs text-gray-600 border-t border-gray-300 pt-1 mt-auto flex-shrink-0">
                   <span className="truncate">👤 {wish.author}</span>
+                  {/* 会社メモの場合は建物アイコンを右下に表示 */}
+                  {wish.isCompanyWish && (
+                    <img
+                      src="/assets/company_building_icon.png"
+                      alt="Company"
+                      className="absolute bottom-0 right-0 w-16 h-16 object-cover"
+                    />
+                  )}
                 </div>
               </div>
             </Rnd>
