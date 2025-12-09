@@ -72,6 +72,8 @@ export interface PersonMemo {
   id: string;
   name: string;
   department: string;
+  company: string; // MBS Group company ID (e.g., 'mbs_tv', 'mbs_radio')
+  yearsOfService: number; // 入社年数（0=新卒、1以上=経験者）
   expertise: string[];
   email: string;
   phone?: string;
@@ -141,4 +143,107 @@ export interface ProjectChat {
   projectId: string;
   participants: ProjectChatParticipant[];
   messages: ProjectMessage[];
+}
+
+// 10. ブレストボード - 願い（Wish）
+export interface Wish {
+  id: string;
+  title: string; // 「音楽フェスをやりたい」
+  description: string; // 詳細説明
+  keywords: string[]; // マッチング用キーワード ["音楽", "フェス", "配信"]
+  author: string; // 願いを出した人の名前
+  companyId: string; // 所属会社ID（MBSグループ）
+  createdAt: Date;
+  position: { x: number; y: number }; // キャンバス上の位置
+  size: { width: number | string; height: number | string }; // サイズ
+  zIndex: number;
+  comments?: WishComment[]; // 願いに対するコメント（Phase 1.5+）
+  stickyColor?: string; // 付箋の色（Tailwind色クラス）
+}
+
+// 10b. ブレストボード - 願いへのコメント
+export interface WishComment {
+  id: string;
+  wishId: string; // 願いID への参照
+  authorId: string; // PersonMemo.id への参照
+  authorName?: string; // キャッシュ: コメント著者名（表示用）
+  content: string; // コメント本文
+  timestamp: Date;
+  reactions?: string[]; // リアクション絵文字（将来拡張用）
+}
+
+// 11. ブレストボード - マッチグループ
+export interface MatchGroup {
+  id: string;
+  wishs: string[]; // マッチした願いのID配列
+  commonKeywords: string[]; // 共通キーワード
+  matchScore: number; // マッチスコア 0-100
+  createdAt: Date;
+}
+
+// 12. ブレストボード - チーム
+export interface BrainstormTeam {
+  id: string;
+  name: string; // 「2026年VR対応音楽フェス」
+  wishs: string[]; // 関連する願いのID配列
+  matchGroupId: string; // 元になったマッチグループID
+  members: {
+    personId: string;
+    name: string;
+    reason: string; // なぜこの人が提案されたか
+    yearsOfService: number; // 入社年数
+  }[];
+  externalInvites?: {
+    email: string;
+    invitedBy: string; // 招待者名
+    invitedAt: Date;
+  }[]; // 外部メンバー招待リスト
+  chatRoomId?: string; // 専用チャットルームID
+  whiteboardId?: string; // 専用ホワイトボードID
+  createdAt: Date;
+}
+
+// チームチャット用メッセージ
+export interface TeamMessage {
+  id: string;
+  teamId: string; // BrainstormTeam.id への参照
+  author: string; // メッセージ著者名
+  content: string; // メッセージ本文
+  timestamp: Date;
+}
+
+// Phase 3: チーム作成リクエスト (フォームデータ)
+export interface TeamCreationRequest {
+  matchGroupId: string;
+  teamName: string;
+  selectedMemberIds: string[]; // 手動で選択されたPersonMemo IDs
+  recommendationReasons: {
+    personId: string;
+    reason: string; // e.g., "願いの著者", "コメント", "専門知識"
+  }[];
+  externalInvites?: string[]; // 外部招待メールアドレスリスト
+}
+
+// Phase 3: メンバー推奨情報（理由詳細付き）
+export interface TeamMemberRecommendation {
+  personId: string;
+  name: string;
+  department: string;
+  expertise: string[];
+  yearsOfService: number;
+  recommendationReasons: {
+    type: 'wish_author' | 'wish_commenter' | 'expertise_match'; // 理由カテゴリ
+    wishId: string;
+    wishTitle: string;
+    details: string;
+  }[];
+  isSelected: boolean; // UI用チェックボックス状態
+}
+
+// Phase 3: チーム作成メタデータ
+export interface TeamMetadata {
+  totalWishes: number;
+  commonKeywords: string[];
+  matchScore: number;
+  suggestedTeamName?: string;
 }

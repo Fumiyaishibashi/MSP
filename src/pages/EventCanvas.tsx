@@ -90,7 +90,12 @@ const EventCanvas = () => {
   // macOSのマジックパッド対応
   const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
     if (e.shiftKey) {
-      e.preventDefault();
+      // パッシブイベントの警告を避けるため、イベント処理のチェック後にpreventDefaultを呼ぶ
+      try {
+        e.preventDefault();
+      } catch (err) {
+        // パッシブイベントリスナーでのpreventDefault失敗を無視
+      }
       const delta = e.deltaY < 0 ? 0.1 : -0.1;
       handleZoom(delta);
     }
@@ -214,6 +219,8 @@ const EventCanvas = () => {
       id: `person_custom_${uuidv4()}`,
       name: newPersonForm.name,
       department: newPersonForm.department,
+      company: 'mbs_tv',
+      yearsOfService: 3,
       expertise: newPersonForm.expertise.filter((e) => e.trim()),
       email: newPersonForm.email,
       phone: newPersonForm.phone,

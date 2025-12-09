@@ -8,7 +8,7 @@ interface ModalProps {
   onClose: () => void;
   children: ReactNode;
   title?: string;
-  size?: 'small' | 'medium' | 'large';
+  size?: 'small' | 'medium' | 'large' | 'xlarge';
 }
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title, size = 'medium' }) => {
@@ -20,6 +20,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title, size = 
     small: 'max-w-sm',
     medium: 'max-w-md',
     large: 'max-w-2xl',
+    xlarge: 'max-w-5xl',
   };
 
   const modalContent = (

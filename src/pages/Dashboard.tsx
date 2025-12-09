@@ -1,7 +1,8 @@
 import { useContext } from 'react';
+import { Link } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
 import { v4 as uuidv4 } from 'uuid';
-import { Plus, RotateCcw, User } from 'lucide-react';
+import { Plus, RotateCcw, User, Lightbulb } from 'lucide-react';
 import EventStickyCard from '../components/canvas/EventStickyCard';
 
 const Dashboard = () => {
@@ -66,6 +67,30 @@ const Dashboard = () => {
       </header>
 
       <main className="max-w-7xl mx-auto px-8 py-12">
+        {/* Brainstorm Board CTA */}
+        <div className="mb-10 p-6 bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 rounded-2xl shadow-sm hover:shadow-md transition-all">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+                <Lightbulb size={28} className="text-white" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 mb-1">2026年 ブレストボード</h3>
+                <p className="text-gray-700">
+                  MBSグループが実現したい企画を願いとして提出し、マッチング・チーム形成しましょう
+                </p>
+              </div>
+            </div>
+            <Link
+              to="/brainstorm"
+              className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 whitespace-nowrap"
+            >
+              <Lightbulb size={20} />
+              ブレストを開く
+            </Link>
+          </div>
+        </div>
+
         {/* Page Title & Actions */}
         <div className="mb-10">
           <div className="flex justify-between items-start mb-8">
