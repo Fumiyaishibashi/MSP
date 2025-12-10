@@ -95,7 +95,7 @@ const wish1: Wish = createWish({
   companyId: "mirika_music",
   keywords: ["音楽フェス", "イベント", "異業種コラボ", "ラジオ", "テレビ"],
   position: { x: 48.63154836722883, y: 47.671523287573294 },
-  size: { width: 296, height: 232 },
+  size: { width: 296, height: 228 },
   isCompanyWish: true, // 会社メモ
 });
 wish1.comments = [
@@ -125,7 +125,7 @@ const wish2: Wish = createWish({
   companyId: "mbs_radio",
   keywords: ["音楽", "お笑い", "FES", "イベント"],
   position: { x: 353, y: 30 },
-  size: { width: 274, height: 200 },
+  size: { width: 279, height: 200 },
   isCompanyWish: true, // 会社メモ
 });
 wish2.comments = [
@@ -163,7 +163,7 @@ const wish3: Wish = createWish({
   author: "長沢健太",
   companyId: "mbs_tv",
   keywords: ["食", "お笑い", "FES", "キッチンカー"],
-  position: { x: 344, y: 247 },
+  position: { x: 365, y: 250 },
   size: { width: 322, height: 180 },
   isCompanyWish: true, // 会社メモ
 });
@@ -177,7 +177,7 @@ const wish4: Wish = createWish({
   author: "高野成一",
   companyId: "broadcast_film",
   keywords: ["VR", "配信", "イベント", "体験型"],
-  position: { x: 439, y: 511.5 },
+  position: { x: 372, y: 538.5 },
   size: { width: 300, height: 220 },
 });
 allWishes.push(wish4);
@@ -191,7 +191,7 @@ const wish5: Wish = createWish({
   companyId: "toromi",
   keywords: ["食", "FES", "イベント"],
   position: { x: 650, y: 44 },
-  size: { width: 254, height: 190 },
+  size: { width: 265, height: 190 },
   isCompanyWish: true, // 会社メモ
 });
 allWishes.push(wish5);
@@ -203,8 +203,8 @@ const wish6: Wish = createWish({
   author: "鈴木圭吾",
   companyId: "mbs_goods",
   keywords: ["グッズ", "制作", "イベント"],
-  position: { x: 831.0517242128733, y: 340.7350425338654 },
-  size: { width: 257, height: 180 },
+  position: { x: 888.7362060546875, y: 332.5145263671875 },
+  size: { width: 312, height: 210 },
   isPersonalOffer: true, // 人材メモフラグ
   avatarImage: "/assets/avatar_suzuki_keigo.png", // 写真パス
 });
@@ -219,7 +219,7 @@ const wish7: Wish = createWish({
   companyId: "upland",
   keywords: ["Vtuber", "IT", "イベント", "出演"],
   position: { x: 32.380937093580165, y: 473.7933764027768 },
-  size: { width: 290, height: 210 },
+  size: { width: 304, height: 210 },
   isCompanyWish: true, // 会社メモ
 });
 allWishes.push(wish7);
@@ -231,8 +231,8 @@ const wish8: Wish = createWish({
   author: "伊藤健一",
   companyId: "innovation",
   keywords: ["VR", "IT", "イベント", "メタバース"],
-  position: { x: 32, y: 747 },
-  size: { width: 261, height: 185 },
+  position: { x: 50, y: 766 },
+  size: { width: 292, height: 185 },
   isCompanyWish: true, // 会社メモ
 });
 allWishes.push(wish8);
@@ -244,8 +244,8 @@ const wish9: Wish = createWish({
   author: "山田太郎",
   companyId: "mbs_tv",
   keywords: ["拡大", "企画", "配信"],
-  position: { x: 1020, y: 970 },
-  size: { width: 240, height: 160 },
+  position: { x: 544, y: 1196 },
+  size: { width: 281, height: 160 },
   isCompanyWish: true, // 会社メモ
 });
 allWishes.push(wish9);
@@ -257,7 +257,7 @@ const wish10: Wish = createWish({
   author: "田中花子",
   companyId: "mbs_radio",
   keywords: ["イベント", "連携", "体験"],
-  position: { x: 1133, y: 42 },
+  position: { x: 1071, y: 732 },
   size: { width: 280, height: 200 },
   isCompanyWish: true, // 会社メモ
 });
@@ -270,8 +270,8 @@ const wish11: Wish = createWish({
   author: "佐藤次郎",
   companyId: "mbs_planning",
   keywords: ["制作", "支援", "ノウハウ"],
-  position: { x: 205, y: 1011 },
-  size: { width: 220, height: 180 },
+  position: { x: 227, y: 997 },
+  size: { width: 276, height: 185 },
   isPersonalOffer: true, // 人材メモ
   avatarImage: "/assets/avatar_suzuki_keigo.png",
 });
@@ -297,7 +297,7 @@ const wish13: Wish = createWish({
   author: "鈴木健介",
   companyId: "mirika_music",
   keywords: ["拡大", "企画", "配信"],
-  position: { x: 400, y: 777 },
+  position: { x: 55, y: 1219 },
   size: { width: 260, height: 190 },
   isCompanyWish: true, // 会社メモ
 });
@@ -310,8 +310,8 @@ const wish14: Wish = createWish({
   author: "木村康司",
   companyId: "yami",
   keywords: ["イベント", "連携", "体験"],
-  position: { x: 1180, y: 290 },
-  size: { width: 265, height: 170 },
+  position: { x: 1213.3999633789062, y: 249 },
+  size: { width: 283, height: 170 },
   isCompanyWish: true, // 会社メモ
 });
 allWishes.push(wish14);
@@ -337,8 +337,8 @@ const wish16: Wish = createWish({
   author: "中田文香",
   companyId: "hinata_life",
   keywords: ["デジタル", "推進", "体験"],
-  position: { x: 1549, y: 994 },
-  size: { width: 260, height: 185 },
+  position: { x: 1222, y: 511.5 },
+  size: { width: 282, height: 185 },
   isCompanyWish: true, // 会社メモ
 });
 allWishes.push(wish16);
@@ -351,7 +351,7 @@ const wish17: Wish = createWish({
   companyId: "appland",
   keywords: ["拡大", "企画", "配信"],
   position: { x: 2061, y: 19.5 },
-  size: { width: 240, height: 184 },
+  size: { width: 254, height: 184 },
   isCompanyWish: true, // 会社メモ
 });
 allWishes.push(wish17);
@@ -376,8 +376,8 @@ const wish19: Wish = createWish({
   author: "山田太郎",
   companyId: "mbs_goods",
   keywords: ["制作", "支援", "ノウハウ"],
-  position: { x: 984, y: 657 },
-  size: { width: 240, height: 184 },
+  position: { x: 2004, y: 603 },
+  size: { width: 290, height: 206 },
   isPersonalOffer: true, // 人材メモ
   avatarImage: "/assets/avatar_suzuki_keigo.png",
 });
@@ -390,8 +390,8 @@ const wish20: Wish = createWish({
   author: "田中花子",
   companyId: "gaora",
   keywords: ["デジタル", "推進", "体験"],
-  position: { x: 1243, y: 530 },
-  size: { width: 300, height: 162 },
+  position: { x: 1079.0999755859375, y: 22 },
+  size: { width: 313, height: 176 },
   isCompanyWish: true, // 会社メモ
 });
 allWishes.push(wish20);
@@ -416,8 +416,8 @@ const wish22: Wish = createWish({
   author: "鈴木由美",
   companyId: "picori",
   keywords: ["イベント", "連携", "体験"],
-  position: { x: 1448, y: 38 },
-  size: { width: 262, height: 170 },
+  position: { x: 1417, y: 38 },
+  size: { width: 280, height: 170 },
   isCompanyWish: true, // 会社メモ
 });
 allWishes.push(wish22);
@@ -429,7 +429,7 @@ const wish23: Wish = createWish({
   author: "鈴木健介",
   companyId: "mbs_live",
   keywords: ["制作", "支援", "ノウハウ"],
-  position: { x: 69, y: 1221 },
+  position: { x: 733, y: 597.5 },
   size: { width: 290, height: 210 },
   isPersonalOffer: true, // 人材メモ
   avatarImage: "/assets/avatar_suzuki_keigo.png",
@@ -443,8 +443,8 @@ const wish24: Wish = createWish({
   author: "木村康司",
   companyId: "mg_sports",
   keywords: ["デジタル", "推進", "体験"],
-  position: { x: 1276, y: 805 },
-  size: { width: 252, height: 185 },
+  position: { x: 1432, y: 904 },
+  size: { width: 300, height: 185 },
   isCompanyWish: true, // 会社メモ
 });
 allWishes.push(wish24);
@@ -457,7 +457,7 @@ const wish25: Wish = createWish({
   companyId: "zipang",
   keywords: ["拡大", "企画", "配信"],
   position: { x: 1298, y: 1213 },
-  size: { width: 240, height: 178 },
+  size: { width: 263, height: 178 },
   isCompanyWish: true, // 会社メモ
 });
 allWishes.push(wish25);
@@ -469,7 +469,7 @@ const wish26: Wish = createWish({
   author: "中田文香",
   companyId: "vogaro",
   keywords: ["イベント", "連携", "体験"],
-  position: { x: 1481, y: 313 },
+  position: { x: 1522, y: 332 },
   size: { width: 280, height: 200 },
   isCompanyWish: true, // 会社メモ
 });
@@ -482,8 +482,8 @@ const wish27: Wish = createWish({
   author: "小林智子",
   companyId: "upland",
   keywords: ["制作", "支援", "ノウハウ"],
-  position: { x: 544, y: 1121 },
-  size: { width: 220, height: 180 },
+  position: { x: 992, y: 975 },
+  size: { width: 296, height: 217 },
   isPersonalOffer: true, // 人材メモ
   avatarImage: "/assets/avatar_suzuki_keigo.png",
 });
@@ -509,7 +509,7 @@ const wish29: Wish = createWish({
   author: "山田太郎",
   companyId: "innovation",
   keywords: ["拡大", "企画", "配信"],
-  position: { x: 710, y: 856 },
+  position: { x: 555, y: 828 },
   size: { width: 260, height: 190 },
   isCompanyWish: true, // 会社メモ
 });
@@ -523,7 +523,7 @@ const wish30: Wish = createWish({
   companyId: "mbs_planning",
   keywords: ["イベント", "連携", "体験"],
   position: { x: 1840, y: 390 },
-  size: { width: 261, height: 170 },
+  size: { width: 274, height: 170 },
   isCompanyWish: true, // 会社メモ
 });
 allWishes.push(wish30);

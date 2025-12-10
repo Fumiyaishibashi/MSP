@@ -17,22 +17,34 @@ export const demoTeams: BrainstormTeam[] = [
     matchGroupId: "match_proximity_demo_gobugobu_fes",
     members: [
       {
-        personId: "person_kimura",
-        name: "木村康司",
-        reason: "願い「ごぶごぶFES今年は音楽×お笑い」の著者, 「ごぶごぶFES今年は音楽×お笑い」にコメント",
-        yearsOfService: 12,
-      },
-      {
         personId: "person_okada",
         name: "岡田圭太",
         reason: "「ごぶごぶFES今年は音楽×お笑い」にコメント, 願い「2026年異業種コラボ音楽フェスを実現したい」の著者",
         yearsOfService: 6,
       },
       {
+        personId: "person_kimura",
+        name: "木村康司",
+        reason: "願い「ごぶごぶFES今年は音楽×お笑い」の著者, 「ごぶごぶFES今年は音楽×お笑い」にコメント",
+        yearsOfService: 12,
+      },
+      {
+        personId: "person_yamazaki",
+        name: "山﨑亜美",
+        reason: "願い「食フェスティバルを開きたい」の著者, 「ごぶごぶFES今年は音楽×お笑い」にコメント",
+        yearsOfService: 5,
+      },
+      {
         personId: "person_nagasawa",
         name: "長沢健太",
         reason: "「ごぶごぶFES今年は音楽×お笑い」にコメント, 願い「あれみたで「食」企画」の著者",
         yearsOfService: 9,
+      },
+      {
+        personId: "person_goods_01",
+        name: "鈴木圭吾",
+        reason: "願い「グッズの制作のお話あれば！！」の著者, グッズ企画・製造の専門知識",
+        yearsOfService: 8,
       },
     ],
     createdAt: new Date('2025-12-09T03:04:20.945Z'),

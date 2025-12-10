@@ -115,6 +115,7 @@ const BrainstormBoard = () => {
     const companyMap: { [key: string]: string } = {
       'mbs_tv': '株式会社毎日放送',
       'mbs_radio': '株式会社MBSラジオ',
+      'mbs_goods': 'MBSラジオ/グッズ班',
       'gaora': 'GAORA',
       'mbs_planning': '株式会社MBS企画',
       'broadcast_film': '株式会社放送映画製作所',

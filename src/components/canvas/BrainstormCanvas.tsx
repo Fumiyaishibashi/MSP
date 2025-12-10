@@ -7,6 +7,33 @@ import WishDetailPanel from '../modals/WishDetailPanel';
 import MatchConfirmationModal from '../modals/MatchConfirmationModal';
 import { calculateDistance, calculateDistanceToBounds, PROXIMITY_MATCH_DISTANCE } from '../../utils/distance';
 
+// companyIdから会社ロゴ画像パスへのマッピング
+const getCompanyLogoPath = (companyId: string): string => {
+  const logoMap: { [key: string]: string } = {
+    mbs_tv: '/assets/company_logos/毎日放送.jpg',
+    mbs_radio: '/assets/company_logos/MBSラジオ.jpg',
+    mbs_planning: '/assets/company_logos/MBS企画.jpg',
+    broadcast_film: '/assets/company_logos/放送映画.jpg',
+    mirika_music: '/assets/company_logos/ミリカ・ミュージック.jpg',
+    yami: '/assets/company_logos/闇.jpg',
+    innovation: '/assets/company_logos/MBSイノベーションドライブ.jpg',
+    toromi: '/assets/company_logos/TOROMI PRODUCE.jpg',
+    hinata_life: '/assets/company_logos/ひなたライフ.jpg',
+    appland: '/assets/company_logos/アップランド.jpg',
+    mbs_anime: '/assets/company_logos/毎日放送.jpg',
+    mbs_goods: '/assets/company_logos/MBSラジオ.jpg', // MBSラジオ/グッズ班
+    gaora: '/assets/company_logos/GAORA.jpg',
+    facilities: '/assets/company_logos/MBSファシリティーズ.jpg',
+    picori: '/assets/company_logos/ピコリ.jpg',
+    mbs_live: '/assets/company_logos/MBSライブエンターテイメント.jpg',
+    upland: '/assets/company_logos/アップランド.jpg',
+    mg_sports: '/assets/company_logos/毎日放送.jpg',
+    zipang: '/assets/company_logos/毎日放送.jpg',
+    vogaro: '/assets/company_logos/Vogaro.jpg',
+  };
+  return logoMap[companyId] || '/assets/company_logos/毎日放送.jpg'; // デフォルトはMBS
+};
+
 interface BrainstormCanvasProps {
   wishs: Wish[];
   zoom?: number;
@@ -175,6 +202,7 @@ const BrainstormCanvas: React.FC<BrainstormCanvasProps> = ({ wishs, zoom = 1 }) 
     const companyMap: { [key: string]: string } = {
       'mbs_tv': '株式会社毎日放送',
       'mbs_radio': '株式会社MBSラジオ',
+      'mbs_goods': '株式会社MBSラジオ / グッズ班',
       'gaora': 'GAORA',
       'mbs_planning': '株式会社MBS企画',
       'broadcast_film': '株式会社放送映画製作所',
@@ -516,12 +544,20 @@ const BrainstormCanvas: React.FC<BrainstormCanvasProps> = ({ wishs, zoom = 1 }) 
                 {/* Footer */}
                 <div className="relative flex justify-between items-end text-xs text-gray-600 border-t border-gray-300 pt-1 mt-auto flex-shrink-0">
                   <span className="truncate">👤 {wish.author}</span>
-                  {/* 会社メモの場合は建物アイコンを右下に表示 */}
+                  {/* 会社メモの場合は会社ロゴを右下に表示 */}
                   {wish.isCompanyWish && (
                     <img
-                      src="/assets/company_building_icon.png"
-                      alt="Company"
-                      className="absolute bottom-0 right-0 w-16 h-16 object-cover"
+                      src={getCompanyLogoPath(wish.companyId)}
+                      alt="Company Logo"
+                      className="absolute bottom-0 right-0 w-20 h-16 object-cover"
+                    />
+                  )}
+                  {/* 人メモの場合も会社ロゴを右下に表示（wishのcompanyIdを直接使用） */}
+                  {wish.isPersonalOffer && (
+                    <img
+                      src={getCompanyLogoPath(wish.companyId)}
+                      alt="Company Logo"
+                      className="absolute bottom-0 right-0 w-20 h-16 object-cover"
                     />
                   )}
                 </div>
